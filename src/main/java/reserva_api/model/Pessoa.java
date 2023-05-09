@@ -25,7 +25,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
-import reserva_api.model.enums.TipoVinculo;
+import reserva_api.model.enums.TipoPerfil;
 
 @Entity
 @Table(name = "pessoa")
@@ -44,7 +44,7 @@ public class Pessoa implements Serializable {
 	@Past(message = "Data nascimento inválida")
 	private LocalDate dataNascimento;
 	@Enumerated(EnumType.STRING)
-	private TipoVinculo tipoVinculo;
+	private TipoPerfil tipoPerfil;
 
 	@Embedded
 	private Telefone telefone;
@@ -66,7 +66,7 @@ public class Pessoa implements Serializable {
 	}
 
 	public Pessoa(Long id, String nome, String cpf, String siape, LocalDate dataNascimento, Setor setor,
-			TipoVinculo tipoVinculo, Telefone telefone) {
+				  TipoPerfil tipoPerfil, Telefone telefone) {
 		super();
 		this.id = id;
 		this.nome = nome;
@@ -74,7 +74,7 @@ public class Pessoa implements Serializable {
 		this.siape = siape;
 		this.dataNascimento = dataNascimento;
 		this.setor = setor;
-		this.tipoVinculo = tipoVinculo;
+		this.tipoPerfil = tipoPerfil;
 		this.telefone = telefone;
 	}
 
@@ -130,12 +130,12 @@ public class Pessoa implements Serializable {
 		return solicitacoes;
 	}
 
-	public TipoVinculo getTipoVinculo() {
-		return tipoVinculo;
+	public TipoPerfil getTipoPerfil() {
+		return tipoPerfil;
 	}
 
-	public void setTipoVinculo(TipoVinculo tipoVinculo) {
-		this.tipoVinculo = tipoVinculo;
+	public void setTipoPerfil(TipoPerfil tipoPerfil) {
+		this.tipoPerfil = tipoPerfil;
 	}
 
 	public void setSolicitacoes(Set<Solicitacao> solicitacoes) {

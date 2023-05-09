@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
-import reserva_api.model.enums.TipoVinculo;
+import reserva_api.model.enums.TipoPerfil;
 
 @Entity
 public class Motorista extends Pessoa {
@@ -30,9 +30,9 @@ public class Motorista extends Pessoa {
 		super(id);
 	}
 
-	public Motorista(Long id, String nome, String cpf, String siape, 
-			LocalDate dataNascimento, Setor setor, TipoVinculo tipoVinculo, Telefone telefone, String numeroCnh) {
-		super(id, nome, cpf, siape, dataNascimento, setor, tipoVinculo,telefone);
+	public Motorista(Long id, String nome, String cpf, String siape,
+					 LocalDate dataNascimento, Setor setor, TipoPerfil tipoPerfil, Telefone telefone, String numeroCnh) {
+		super(id, nome, cpf, siape, dataNascimento, setor, tipoPerfil,telefone);
 		this.numeroCnh = numeroCnh;
 	}
 
