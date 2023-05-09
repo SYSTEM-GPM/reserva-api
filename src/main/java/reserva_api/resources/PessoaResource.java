@@ -2,6 +2,7 @@ package reserva_api.resources;
 
 import java.net.URI;
 
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +22,9 @@ import reserva_api.dto.PessoaDto;
 import reserva_api.model.Motorista;
 import reserva_api.model.Pessoa;
 import reserva_api.repositories.filters.PessoaFilter;
-import reserva_api.repositories.filters.RecursoFilter;
+import reserva_api.services.EnviaEmailService;
 import reserva_api.services.PessoaService;
+import reserva_api.utils.MensagemEmailUtil;
 
 @RestController
 @RequestMapping(value = "/pessoas")
@@ -31,11 +33,14 @@ public class PessoaResource {
 	@Autowired
 	private PessoaService pessoaService;
 
+	@Autowired
+	private EnviaEmailService enviaEmailService;
+
 	@GetMapping
 	public ResponseEntity<Page<Pessoa>> buscarTodos(Pageable pageable) {
 		return ResponseEntity.ok().body(pessoaService.buscarTodos(pageable));
 	}
-	
+
 	@GetMapping("/resumo")
 	public ResponseEntity<Page<PessoaDto>> filtarPessoa(PessoaFilter pessoaFilter,Pageable pageable) {
 		return ResponseEntity.ok().body(pessoaService.filtarTodas(pessoaFilter, pageable));
@@ -48,10 +53,17 @@ public class PessoaResource {
 	}
 
 	@PostMapping
-	public ResponseEntity<Pessoa> salvar(@Valid @RequestBody Pessoa pessoa) {
+	public ResponseEntity<Pessoa> salvar(@Valid @RequestBody Pessoa pessoa) throws MessagingException {
 		Pessoa pessoaSalvo = pessoaService.salvar(pessoa);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pessoaSalvo.getId())
 				.toUri();
+
+		// enviaEmailService.enviar(
+		// 		"josilenevitoriasilva@gmail.com",
+		// 		"Teste Spring Boot",
+		// 		MensagemEmailUtil.ativacaoUsuario("Josilene", "https://google.com")
+		// );
+
 		return ResponseEntity.created(uri).body(pessoaSalvo);
 	}
 
