@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `pessoa` (
   `siape` varchar(255) DEFAULT NULL,
   `numero` varchar(255) DEFAULT NULL,
   `tipo` varchar(255) DEFAULT NULL,
-  `tipo_vinculo` varchar(255) DEFAULT NULL,
+  `tipo_perfil` varchar(255) DEFAULT NULL,
   `setor_id` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKc2uiam562pt4rl1dnt0lmkrw5` (`setor_id`),
@@ -112,6 +112,7 @@ CREATE TABLE IF NOT EXISTS `solicitacao_recurso` (
 -- Copiando estrutura para tabela reserva_data.transporte
 CREATE TABLE IF NOT EXISTS `transporte` (
   `placa` varchar(255) DEFAULT NULL,
+  `descricao` varchar(255) DEFAULT NULL,
   `total_de_assentos` int DEFAULT NULL,
   `id` bigint NOT NULL,
   PRIMARY KEY (`id`),

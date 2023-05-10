@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import reserva_api.model.enums.TipoVinculo;
+import reserva_api.model.enums.TipoPerfil;
 
 public class PessoaFilter {
 	private String nome;
@@ -12,15 +12,15 @@ public class PessoaFilter {
 	private String siape;
 	private LocalDate dataNascimento;
 	@Enumerated(EnumType.STRING)
-	private TipoVinculo tipoVinculo;
+	private TipoPerfil tipoPerfil;
 	
-	public PessoaFilter(String nome, String cpf, String siape, LocalDate dataNascimento, TipoVinculo tipoVinculo) {
+	public PessoaFilter(String nome, String cpf, String siape, LocalDate dataNascimento, TipoPerfil tipoPerfil) {
 		super();
 		this.nome = nome;
 		this.cpf = cpf;
 		this.siape = siape;
 		this.dataNascimento = dataNascimento;
-		this.tipoVinculo = tipoVinculo;
+		this.tipoPerfil = tipoPerfil;
 	}
 
 	public String getNome() {
@@ -55,12 +55,12 @@ public class PessoaFilter {
 		this.dataNascimento = dataNascimento;
 	}
 
-	public TipoVinculo getTipoVinculo() {
-		return tipoVinculo;
+	public TipoPerfil getTipoPerfil() {
+		return tipoPerfil;
 	}
 
-	public void setTipoVinculo(TipoVinculo tipoVinculo) {
-		this.tipoVinculo = tipoVinculo;
+	public void setTipoPerfil(TipoPerfil tipoPerfil) {
+		this.tipoPerfil = tipoPerfil;
 	}
 	
 }

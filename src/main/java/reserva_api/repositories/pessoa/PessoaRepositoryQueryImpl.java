@@ -35,7 +35,7 @@ public class PessoaRepositoryQueryImpl implements PessoaRepositoryQuery {
 		criteria.distinct(true);
 
 		criteria.select(builder.construct(PessoaDto.class, root.get("nome"), root.get("cpf"),
-				root.get("siape"), root.get("dataNascimento"), root.get("tipoVinculo"),
+				root.get("siape"), root.get("dataNascimento"), root.get("tipoPerfil"),
 				root.get("telefone").get("numero")));
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
@@ -94,8 +94,8 @@ public class PessoaRepositoryQueryImpl implements PessoaRepositoryQuery {
 					pessoaFilter.getDataNascimento()));
 		}
 		
-		if (!ObjectUtils.isEmpty(pessoaFilter.getTipoVinculo())) {
-			predicates.add(builder.equal(root.get("tipoVinculo"), pessoaFilter.getTipoVinculo()));
+		if (!ObjectUtils.isEmpty(pessoaFilter.getTipoPerfil())) {
+			predicates.add(builder.equal(root.get("tipoPerfil"), pessoaFilter.getTipoPerfil()));
 		}
 
 		return predicates;
