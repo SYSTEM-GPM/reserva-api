@@ -1,4 +1,4 @@
-package reserva_api.model;
+package reserva_api.models;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -6,67 +6,67 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import org.hibernate.validator.constraints.br.CPF;
+import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
-import reserva_api.model.enums.TipoPerfil;
+import reserva_api.models.enums.TipoPerfil;
 
 @Entity
 @Table(name = "pessoa")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Pessoa implements Serializable {
+public class PessoaModel implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	//Gera os ids automaticamente de forma sequencial
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@NotBlank(message = "Nome é obrigatório")
+
+	@Column(nullable = false, length = 255)
+	//@NotBlank(message = "Nome é obrigatório")
 	private String nome;
-	@CPF(message = "CPF inválido")
+
+	@Column(nullable = false, unique = true, length = 255)
+	//@CPF(message = "CPF inválido")
 	private String cpf;
+
+	@Column(nullable = false, unique = true, length = 255)
 	private String siape;
-	@Past(message = "Data nascimento inválida")
+
+	@Column(nullable = false, length = 255)
+	//@Past(message = "Data nascimento inválida")
 	private LocalDate dataNascimento;
+
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 255)
 	private TipoPerfil tipoPerfil;
 
 	@Embedded
-	private Telefone telefone;
+	private TelefoneModel telefone;
+
+	@ManyToOne
+	@JoinColumn(name = "setor_id")
+	private SetorModel setor;
+
+	@OneToOne(mappedBy = "pessoa")
+	private UsuarioModel usuario;
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "solicitante")
 	private Set<Solicitacao> solicitacoes = new HashSet<>();
 
-	@ManyToOne
-	@JoinColumn(name = "setor_id")
-	private Setor setor;
-
-	public Pessoa() {
+	public PessoaModel() {
 
 	}
 
-	public Pessoa(Long id) {
+	public PessoaModel(Long id) {
 		this.id = id;
 	}
 
-	public Pessoa(Long id, String nome, String cpf, String siape, LocalDate dataNascimento, Setor setor,
-				  TipoPerfil tipoPerfil, Telefone telefone) {
+	public PessoaModel(Long id, String nome, String cpf, String siape, LocalDate dataNascimento, SetorModel setor,
+					   TipoPerfil tipoPerfil, TelefoneModel telefone) {
 		super();
 		this.id = id;
 		this.nome = nome;
@@ -118,11 +118,11 @@ public class Pessoa implements Serializable {
 		this.dataNascimento = dataNascimento;
 	}
 
-	public Setor getSetor() {
+	public SetorModel getSetor() {
 		return setor;
 	}
 
-	public void setSetor(Setor setor) {
+	public void setSetor(SetorModel setor) {
 		this.setor = setor;
 	}
 
@@ -142,11 +142,11 @@ public class Pessoa implements Serializable {
 		this.solicitacoes = solicitacoes;
 	}
 
-	public Telefone getTelefone() {
+	public TelefoneModel getTelefone() {
 		return telefone;
 	}
 
-	public void setTelefone(Telefone telefone) {
+	public void setTelefone(TelefoneModel telefone) {
 		this.telefone = telefone;
 	}
 
@@ -163,7 +163,7 @@ public class Pessoa implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Pessoa other = (Pessoa) obj;
+		PessoaModel other = (PessoaModel) obj;
 		return Objects.equals(id, other.id);
 	}
 

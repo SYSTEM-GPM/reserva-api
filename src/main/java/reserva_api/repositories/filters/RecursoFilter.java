@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import reserva_api.model.enums.StatusSolicitacao;
+import reserva_api.models.enums.StatusSolicitacao;
 
 public class RecursoFilter {
 	private Long idRecurso;

@@ -10,20 +10,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import reserva_api.model.Equipamento;
-import reserva_api.model.Local;
-import reserva_api.model.Motorista;
-import reserva_api.model.Pessoa;
-import reserva_api.model.Recurso;
-import reserva_api.model.Setor;
-import reserva_api.model.Solicitacao;
-import reserva_api.model.Telefone;
-import reserva_api.model.Transporte;
-import reserva_api.model.Viagem;
-import reserva_api.model.enums.StatusSolicitacao;
-import reserva_api.model.enums.TipoEquipamento;
-import reserva_api.model.enums.TipoTelefone;
-import reserva_api.model.enums.TipoVinculo;
+import reserva_api.models.*;
+import reserva_api.models.SetorModel;
+import reserva_api.models.enums.StatusSolicitacao;
+import reserva_api.models.enums.TipoEquipamento;
+import reserva_api.models.enums.TipoPerfil;
+import reserva_api.models.enums.TipoTelefone;
 import reserva_api.repositories.MotoristaRepository;
 import reserva_api.repositories.PessoaRepository;
 import reserva_api.repositories.RecursoRepository;
@@ -76,8 +68,8 @@ public class ReservaApiApplication implements CommandLineRunner {
 		Motorista m1 = motoristaRepository.findById(4L).orElseThrow();
 		Solicitacao sol1 = solicitacaoRepository.findById(1L).orElseThrow();
 		Transporte tr1 = transporteRepository.findById(1L).orElseThrow();
-		Pessoa p1 = pessoaRepository.findById(2L).orElseThrow();
-		Pessoa p2 = pessoaRepository.findById(4L).orElseThrow();
+		PessoaModel p1 = pessoaRepository.findById(2L).orElseThrow();
+		PessoaModel p2 = pessoaRepository.findById(4L).orElseThrow();
 
 		Viagem vg1 = new Viagem(null, "Itacoatiara/Manaus/Itacoatiara", "B1547899", "/arquivos/xdrweweww2.pdf", 120879L,
 				null, m1, sol1, tr1);
@@ -91,7 +83,7 @@ public class ReservaApiApplication implements CommandLineRunner {
 	private void cadastrarSolicitacao() {
 		Solicitacao sl1 = new Solicitacao(null, LocalDateTime.parse("25-04-2023 10:00", ftr),
 				LocalDateTime.parse("25-04-2023 12:00", ftr), " Viagem para tabalho de campo.", LocalDateTime.now(),
-				null, null, StatusSolicitacao.SOLICITADO, new Pessoa(1L));
+				null, null, StatusSolicitacao.SOLICITADO, new PessoaModel(1L));
 		sl1.getRecursos().add(new Transporte(1L));
 		sl1.getRecursos().add(new Equipamento(6L));
 		sl1.getRecursos().add(new Local(3L));
@@ -115,23 +107,23 @@ public class ReservaApiApplication implements CommandLineRunner {
 	}
 
 	private void cadastrarPessoas() {
-		Setor st1 = new Setor(null, "Biblioteca");
-		Setor st2 = new Setor(null, "Coordenação acadêmica");
-		Setor st3 = new Setor(null, "Gerência de TI");
-		Setor st4 = new Setor(null, "Direção");
-		Setor st5 = new Setor(null, "Coordenação administrativa");
+		SetorModel st1 = new SetorModel(null, "Biblioteca");
+		SetorModel st2 = new SetorModel(null, "Coordenação acadêmica");
+		SetorModel st3 = new SetorModel(null, "Gerência de TI");
+		SetorModel st4 = new SetorModel(null, "Direção");
+		SetorModel st5 = new SetorModel(null, "Coordenação administrativa");
 		setorRepository.saveAll(Arrays.asList(st1, st2, st3, st4, st5));
 
-		Pessoa ps1 = new Pessoa(null, "Agatha Sueli Marcela Rezende", "424.554.048-62", "28.507.242-0",
-				LocalDate.parse("04-03-1985", fdate), st1, TipoVinculo.PROFESSOR,new Telefone(TipoTelefone.CELULAR, "(47) 99468-9837"));
+		PessoaModel ps1 = new PessoaModel(null, "Agatha Sueli Marcela Rezende", "424.554.048-62", "28.507.242-0",
+				LocalDate.parse("04-03-1985", fdate), st1, TipoPerfil.NORMAL,new TelefoneModel(TipoTelefone.CELULAR, "(47) 99468-9837"));
 
-		Pessoa ps2 = new Pessoa(null, "Emilly Bruna de Paula", "658.439.303-86", "14.151.755-4",
-				LocalDate.parse("20-04-1977", fdate), st2, TipoVinculo.PROFESSOR,new Telefone(TipoTelefone.CELULAR, "(31) 98984-6061"));
+		PessoaModel ps2 = new PessoaModel(null, "Emilly Bruna de Paula", "658.439.303-86", "14.151.755-4",
+				LocalDate.parse("20-04-1977", fdate), st2, TipoPerfil.NORMAL,new TelefoneModel(TipoTelefone.CELULAR, "(31) 98984-6061"));
 
-		Pessoa ps3 = new Pessoa(null, "Kevin Geraldo Benedito Ferreira", "607.641.416-27", "31.203.387-4",
-				LocalDate.parse("24-10-1988", fdate), st3, TipoVinculo.PROFESSOR,new Telefone(TipoTelefone.FIXO, "(62) 3896-9585"));
-		Pessoa ps4 = new Motorista(null, "Lorenzo Augusto Corte Real", "116.741.496-97", "46.063.022-2",
-				LocalDate.parse("15-06-1980", fdate), st3, TipoVinculo.TERCEIRIZADO, new Telefone(TipoTelefone.FIXO, "(51) 2895-1562"),
+		PessoaModel ps3 = new PessoaModel(null, "Kevin Geraldo Benedito Ferreira", "607.641.416-27", "31.203.387-4",
+				LocalDate.parse("24-10-1988", fdate), st3, TipoPerfil.NORMAL,new TelefoneModel(TipoTelefone.FIXO, "(62) 3896-9585"));
+		PessoaModel ps4 = new Motorista(null, "Lorenzo Augusto Corte Real", "116.741.496-97", "46.063.022-2",
+				LocalDate.parse("15-06-1980", fdate), st3, TipoPerfil.NORMAL, new TelefoneModel(TipoTelefone.FIXO, "(51) 2895-1562"),
 				"60427048705");
 		pessoaRepository.saveAll(Arrays.asList(ps1, ps2, ps3, ps4));
 	}

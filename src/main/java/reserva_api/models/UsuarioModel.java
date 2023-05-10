@@ -1,32 +1,28 @@
-package reserva_api.model;
+package reserva_api.models;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 
 @Entity
 @Table(name = "usuario")
-public class Usuario {
+public class UsuarioModel implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	@Email(message = "Email precisa ser válido")
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long pessoaId;
+
+	//@Email(message = "Email precisa ser válido")
+	@Column(nullable = false, length = 255)
 	private String email;
+
+	@Column(nullable = false, length = 255)
 	private String senha;
 
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -35,24 +31,24 @@ public class Usuario {
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "pessoa_id")
-	@MapsId
-	private Pessoa pessoa;
+	//@MapsId
+	private PessoaModel pessoa;
 
-	public Usuario() {
+	public UsuarioModel() {
 	}
 
-	public Usuario(Long id, String email, String senha) {
-		this.id = id;
+	public UsuarioModel(Long id, String email, String senha) {
+		this.pessoaId = id;
 		this.email = email;
 		this.senha = senha;
 	}
 
-	public Long getId() {
-		return this.id;
+	public Long getPessoaId() {
+		return pessoaId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setPessoaId(Long pessoaId) {
+		this.pessoaId = pessoaId;
 	}
 
 	public String getEmail() {
@@ -71,11 +67,11 @@ public class Usuario {
 		this.senha = senha;
 	}
 
-	public Pessoa getPessoa() {
+	public PessoaModel getPessoa() {
 		return pessoa;
 	}
 
-	public void setPessoa(Pessoa pessoa) {
+	public void setPessoa(PessoaModel pessoa) {
 		this.pessoa = pessoa;
 	}
 
@@ -91,7 +87,7 @@ public class Usuario {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Usuario other = (Usuario) obj;
+		UsuarioModel other = (UsuarioModel) obj;
 		return Objects.equals(email, other.email);
 	}
 

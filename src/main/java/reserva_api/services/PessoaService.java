@@ -5,9 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import reserva_api.dto.PessoaDto;
-import reserva_api.model.Motorista;
-import reserva_api.model.Pessoa;
+import reserva_api.dtos.PessoaDto;
+import reserva_api.models.Motorista;
+import reserva_api.models.PessoaModel;
 import reserva_api.repositories.MotoristaRepository;
 import reserva_api.repositories.PessoaRepository;
 import reserva_api.repositories.filters.PessoaFilter;
@@ -21,7 +21,7 @@ public class PessoaService {
 	@Autowired
 	private MotoristaRepository motoristaRepository;
 
-	public Page<Pessoa> buscarTodos(Pageable pageable) {
+	public Page<PessoaModel> buscarTodos(Pageable pageable) {
 		return pessoaRepository.findAll(pageable);
 	}
 	
@@ -29,15 +29,15 @@ public class PessoaService {
 		return pessoaRepository.filtrarPessoa(pessoaFilter, pageable);
 	}
 
-	public Pessoa buscarPorId(Long id) {
+	public PessoaModel buscarPorId(Long id) {
 		return pessoaRepository.findById(id).orElseThrow();
 	}
 
-	public Pessoa salvar(Pessoa pessoa) {
-		return pessoaRepository.save(pessoa);
+	public PessoaModel salvar(PessoaModel pessoaModel) {
+		return pessoaRepository.save(pessoaModel);
 	}
 
-	public Pessoa salvar(Motorista motorista) {
+	public PessoaModel salvar(Motorista motorista) {
 		return pessoaRepository.save(motorista);
 	}
 
@@ -45,34 +45,34 @@ public class PessoaService {
 		pessoaRepository.deleteById(id);
 	}
 
-	public Pessoa atualizar(Long id, Pessoa pessoa) {
-		Pessoa pessoaSalvo = pessoaRepository.getReferenceById(id);
-		copyPessoa(pessoa, pessoaSalvo);
-		return pessoaRepository.save(pessoaSalvo);
+	public PessoaModel atualizar(Long id, PessoaModel pessoaModel) {
+		PessoaModel pessoaModelSalvo = pessoaRepository.getReferenceById(id);
+		copyPessoa(pessoaModel, pessoaModelSalvo);
+		return pessoaRepository.save(pessoaModelSalvo);
 	}
 
-	public Pessoa atualizar(Long id, Motorista motorista) {
+	public PessoaModel atualizar(Long id, Motorista motorista) {
 		Motorista pessoaSalvo = motoristaRepository.getReferenceById(id);
 		copyMotorista(motorista, pessoaSalvo);
 		return pessoaRepository.save(pessoaSalvo);
 	}
 
-	private void copyPessoa(Pessoa pessoa, Pessoa pessoaSalvo) {
-		if (pessoa.getNome() != null) {
-			pessoaSalvo.setNome(pessoa.getNome());
+	private void copyPessoa(PessoaModel pessoaModel, PessoaModel pessoaModelSalvo) {
+		if (pessoaModel.getNome() != null) {
+			pessoaModelSalvo.setNome(pessoaModel.getNome());
 		}
-		if (pessoa.getCpf() != null) {
-			pessoaSalvo.setCpf(pessoa.getCpf());
+		if (pessoaModel.getCpf() != null) {
+			pessoaModelSalvo.setCpf(pessoaModel.getCpf());
 		}
-		if (pessoa.getSetor() != null) {
-			pessoaSalvo.setSetor(pessoa.getSetor());
+		if (pessoaModel.getSetor() != null) {
+			pessoaModelSalvo.setSetor(pessoaModel.getSetor());
 		}
-		if (pessoa.getSiape() != null) {
-			pessoaSalvo.setSiape(pessoa.getSiape());
+		if (pessoaModel.getSiape() != null) {
+			pessoaModelSalvo.setSiape(pessoaModel.getSiape());
 
 		}
-		if (pessoa.getDataNascimento() != null) {
-			pessoaSalvo.setDataNascimento(pessoa.getDataNascimento());
+		if (pessoaModel.getDataNascimento() != null) {
+			pessoaModelSalvo.setDataNascimento(pessoaModel.getDataNascimento());
 		}
 
 	}

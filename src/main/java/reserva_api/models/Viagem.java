@@ -1,4 +1,4 @@
-package reserva_api.model;
+package reserva_api.models;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -54,7 +54,7 @@ public class Viagem implements Serializable {
 	@JoinTable(name = "passageiro", 
 	joinColumns = @JoinColumn(name = "viagem_id"), 
 	inverseJoinColumns = @JoinColumn(name = "pessoa_id"))
-	private Set<Pessoa> passageiros = new HashSet<>();
+	private Set<PessoaModel> passageiros = new HashSet<>();
 
 	public Viagem() {
 
@@ -151,11 +151,11 @@ public class Viagem implements Serializable {
 		this.quilometragemChegada = quilometragemChegada;
 	}
 
-	public Set<Pessoa> getPassageiros() {
+	public Set<PessoaModel> getPassageiros() {
 		return passageiros;
 	}
 
-	public void setPassageiros(Set<Pessoa> passageiros) {
+	public void setPassageiros(Set<PessoaModel> passageiros) {
 		this.passageiros = passageiros;
 	}
 

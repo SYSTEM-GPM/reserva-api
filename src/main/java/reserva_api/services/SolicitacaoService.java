@@ -11,11 +11,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import reserva_api.dto.ReservaDto;
-import reserva_api.model.Pessoa;
-import reserva_api.model.Recurso;
-import reserva_api.model.Solicitacao;
-import reserva_api.model.enums.StatusSolicitacao;
+import reserva_api.dtos.ReservaDto;
+import reserva_api.models.PessoaModel;
+import reserva_api.models.Recurso;
+import reserva_api.models.Solicitacao;
+import reserva_api.models.enums.StatusSolicitacao;
 import reserva_api.repositories.PessoaRepository;
 import reserva_api.repositories.RecursoRepository;
 import reserva_api.repositories.SolicitacaoRepository;
@@ -60,7 +60,7 @@ public class SolicitacaoService {
 	}
 
 	public List<Solicitacao> buscarPorPessoa(Long id) {
-		Pessoa solicitante = pessoaRepository.findById(id).orElseThrow();
+		PessoaModel solicitante = pessoaRepository.findById(id).orElseThrow();
 		return solicitacaoRepository.findBySolicitante(solicitante).orElseThrow();
 	}
 

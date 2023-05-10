@@ -1,7 +1,6 @@
 package reserva_api.resources;
 
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
-import reserva_api.model.Equipamento;
-import reserva_api.model.Local;
-import reserva_api.model.Recurso;
-import reserva_api.model.Transporte;
+import reserva_api.models.Equipamento;
+import reserva_api.models.Local;
+import reserva_api.models.Recurso;
+import reserva_api.models.Transporte;
 import reserva_api.services.RecursoService;
 
 @RestController
