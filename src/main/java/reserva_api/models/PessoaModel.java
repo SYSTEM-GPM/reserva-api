@@ -50,6 +50,12 @@ public class PessoaModel implements Serializable {
 	@JoinColumn(name = "setor_id")
 	private SetorModel setor;
 
+	@Column(nullable = false, length = 255)
+	private String email;
+
+	@Column(nullable = false, length = 255)
+	private String senha;
+
 	@OneToOne(mappedBy = "pessoa")
 	private UsuarioModel usuario;
 
@@ -148,6 +154,22 @@ public class PessoaModel implements Serializable {
 
 	public void setTelefone(TelefoneModel telefone) {
 		this.telefone = telefone;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
 	}
 
 	@Override

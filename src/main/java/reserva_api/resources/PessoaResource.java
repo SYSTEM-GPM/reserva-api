@@ -111,11 +111,11 @@ public class PessoaResource {
 		pessoaModel = pessoaService.salvar(pessoaModel);
 
 		//Cadastro na tabela usuario
-		var usuarioModel = new UsuarioModel();
-		usuarioModel.setPessoaId(pessoaModel.getId());
-		usuarioModel.setEmail(pessoaDto.getEmail());
+		//var usuarioModel = new UsuarioModel();
+		//usuarioModel.setPessoaId(pessoaModel.getId());
+		//usuarioModel.setEmail(pessoaDto.getEmail());
 		//usuarioModel.setSenha(pessoaDto.getSenha());
-		usuarioService.salvar(usuarioModel);
+		//usuarioService.salvar(usuarioModel);
 
 		// enviaEmailService.enviar(
 		// 		"josilenevitoriasilva@gmail.com",

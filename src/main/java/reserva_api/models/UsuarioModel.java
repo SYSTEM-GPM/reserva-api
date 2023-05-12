@@ -31,7 +31,7 @@ public class UsuarioModel implements Serializable {
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "pessoa_id")
-	//@MapsId
+	@MapsId
 	private PessoaModel pessoa;
 
 	public UsuarioModel() {
@@ -65,14 +65,6 @@ public class UsuarioModel implements Serializable {
 
 	public void setSenha(String senha) {
 		this.senha = senha;
-	}
-
-	public PessoaModel getPessoa() {
-		return pessoa;
-	}
-
-	public void setPessoa(PessoaModel pessoa) {
-		this.pessoa = pessoa;
 	}
 
 	public Set<Permissao> getPermissoes() {
