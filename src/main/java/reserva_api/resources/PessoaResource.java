@@ -26,7 +26,6 @@ import reserva_api.models.enums.TipoTelefone;
 import reserva_api.repositories.filters.PessoaFilter;
 import reserva_api.services.EnviaEmailService;
 import reserva_api.services.PessoaService;
-import reserva_api.services.UsuarioService;
 
 @RestController
 @RequestMapping(value = "/pessoas")
@@ -35,8 +34,8 @@ public class PessoaResource {
 	@Autowired
 	private PessoaService pessoaService;
 
-	@Autowired
-	private UsuarioService usuarioService;
+	//@Autowired
+	//private UsuarioService usuarioService;
 
 	@Autowired
 	private EnviaEmailService enviaEmailService;

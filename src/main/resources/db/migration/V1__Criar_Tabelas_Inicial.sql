@@ -123,24 +123,13 @@ CREATE TABLE IF NOT EXISTS `transporte` (
 
 -- Exportação de dados foi desmarcado.
 
--- Copiando estrutura para tabela reserva_data.usuario
-CREATE TABLE IF NOT EXISTS `usuario` (
-  `pessoa_id` bigint NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `senha` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`pessoa_id`),
-  CONSTRAINT `FK9kjbckbnh9ryosephjpbojisa` FOREIGN KEY (`pessoa_id`) REFERENCES `pessoa` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Exportação de dados foi desmarcado.
-
 -- Copiando estrutura para tabela reserva_data.usuario_permissao
 CREATE TABLE IF NOT EXISTS `usuario_permissao` (
   `id_usuario` bigint NOT NULL,
   `id_permissao` bigint NOT NULL,
   PRIMARY KEY (`id_usuario`,`id_permissao`),
   KEY `FKjvcxjnrmdhdv6eti5d7svm5xw` (`id_permissao`),
-  CONSTRAINT `FKbo8hww1whbpxq8ancjokhnfds` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`pessoa_id`),
+  CONSTRAINT `FKbo8hww1whbpxq8ancjokhnfds` FOREIGN KEY (`id_usuario`) REFERENCES `pessoa` (`id`),
   CONSTRAINT `FKjvcxjnrmdhdv6eti5d7svm5xw` FOREIGN KEY (`id_permissao`) REFERENCES `permissao` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 

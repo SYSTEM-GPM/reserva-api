@@ -56,9 +56,6 @@ public class PessoaModel implements Serializable {
 	@Column(nullable = false, length = 255)
 	private String senha;
 
-	@OneToOne(mappedBy = "pessoa")
-	private UsuarioModel usuario;
-
 	@JsonIgnore
 	@OneToMany(mappedBy = "solicitante")
 	private Set<Solicitacao> solicitacoes = new HashSet<>();

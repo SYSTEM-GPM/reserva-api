@@ -21,7 +21,8 @@ import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "viagem")
-public class Viagem implements Serializable {
+public class
+Viagem implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
