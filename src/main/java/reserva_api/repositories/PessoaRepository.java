@@ -9,4 +9,12 @@ import reserva_api.repositories.pessoa.PessoaRepositoryQuery;
 @Repository
 public interface PessoaRepository extends JpaRepository<PessoaModel, Long>, PessoaRepositoryQuery  {
 
+    boolean existsByCpf(String cpf);
+
+    boolean existsBySiape(String siape);
+
+    boolean existsByEmail(String email);
+
+    //boolean existsByCnh(String cnh);
+
 }

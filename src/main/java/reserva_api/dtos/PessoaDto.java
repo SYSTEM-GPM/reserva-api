@@ -6,7 +6,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.br.CPF;
-import reserva_api.models.SetorModel;
 import reserva_api.models.enums.TipoPerfil;
 
 public class PessoaDto {
@@ -50,17 +49,6 @@ public class PessoaDto {
 	//@NotBlank(message = "O campo Senha é obrigatório")
 	//@Size(min = 6)
 	//private String senha;
-	
-	public PessoaDto(String nome, String cpf, String siape, LocalDate dataNascimento, TipoPerfil tipoPerfil,
-			String telefone) {
-		super();
-		this.nome = nome;
-		this.cpf = cpf;
-		this.siape = siape;
-		this.dataNascimento = dataNascimento;
-		this.tipoPerfil = tipoPerfil;
-		this.telefone = telefone;
-	}
 
 	public String getNome() {
 		return nome;

@@ -101,4 +101,21 @@ public class PessoaService {
 
 	}
 
+	//funcoes de validações
+	public boolean existsByCpf(String cpf) {
+		return pessoaRepository.existsByCpf(cpf);
+	}
+
+	public boolean existsBySiape(String siape) {
+		return pessoaRepository.existsBySiape(siape);
+	}
+
+	public boolean existsByEmail(String email) {
+		return pessoaRepository.existsByEmail(email);
+	}
+
+//	public boolean existsByCnh(String cnh) {
+//		return pessoaRepository.existsByCnh(cnh);
+//	}
+
 }

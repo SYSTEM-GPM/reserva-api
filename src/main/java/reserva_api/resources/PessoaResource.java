@@ -70,26 +70,30 @@ public class PessoaResource {
 	@PostMapping
 	//o retorno de ResponseEntity sera um objeto (status e corpo) utilizado para retornar uma resposta ao usuario
 	//@Valid pode gerar o badrequest caso o valor informado pelo usuario venha invalido
-	public ResponseEntity<PessoaModel> salvar(@RequestBody @Valid PessoaDto pessoaDto) throws MessagingException {
+	public ResponseEntity<Object> salvar(@RequestBody @Valid PessoaDto pessoaDto) throws MessagingException {
 
 		//---Validações
-/*		if(pessoaService.existsByLicensePlateCar(pessoaDto.getLicensePlateCar())){
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Conflict: License Plate is alredy in use!");
-		}
+//		if(pessoaService.existsByCpf(pessoaDto.getCpf())){
+//			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: CPF já está em uso!");
+//		}
+//
+//		if(pessoaService.existsBySiape(pessoaDto.getSiape())){
+//			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Siape já está em uso!");
+//		}
+//
+//		if(pessoaService.existsByEmail(pessoaDto.getEmail())){
+//			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Email já está em uso!");
+//		}
 
-		if(pessoaService.existsByParkingSpotNumber(pessoaDto.getParkingSpotNumber())){
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Conflict: Parking Spot is alredy in use!");
-		}
-
-		if(pessoaService.existsByApartmentAndBlock(pessoaDto.getApartment(), pessoaDto.getBlock())){
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Conflict: Parking Spot alredy registered for this apartment/block!");
-		}
+//		if(pessoaService.existsByCnh(pessoaDto.getCnh())){
+//			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: CNH já está em uso!");
+//		}
 
 		//validar setor e data com valores null
-*/
+
 		//---
 
-		//so executa caso o usuario tenha enviado todos os dados corretamente
+		//so executa caso a pessoa tenha enviado todos os dados corretamente
 		var pessoaModel = new PessoaModel();
 		//Converte o valor dto para valores model
 		BeanUtils.copyProperties(pessoaDto, pessoaModel);

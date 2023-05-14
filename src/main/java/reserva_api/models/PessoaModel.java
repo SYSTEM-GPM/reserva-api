@@ -25,18 +25,15 @@ public class PessoaModel implements Serializable {
 	private Long id;
 
 	@Column(nullable = false, length = 255)
-	//@NotBlank(message = "Nome é obrigatório")
 	private String nome;
 
 	@Column(nullable = false, unique = true, length = 255)
-	//@CPF(message = "CPF inválido")
 	private String cpf;
 
 	@Column(nullable = false, unique = true, length = 255)
 	private String siape;
 
 	@Column(nullable = false, length = 255)
-	//@Past(message = "Data nascimento inválida")
 	private LocalDate dataNascimento;
 
 	@Enumerated(EnumType.STRING)
