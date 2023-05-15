@@ -1,4 +1,4 @@
-package reserva_api.model.enums;
+package reserva_api.models.enums;
 
 public enum TipoEquipamento {
 	PROJETOR,

@@ -1,21 +1,22 @@
-package reserva_api.model;
+package reserva_api.models;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import reserva_api.model.enums.TipoTelefone;
+import reserva_api.models.enums.TipoTelefone;
 
 @Embeddable
-public class Telefone {
-	
+public class TelefoneModel {
+
 	@Enumerated(EnumType.STRING)
 	private TipoTelefone tipo;
+
 	private String numero;
-	public Telefone() {
+	public TelefoneModel() {
 	
 	}
 	
-	public Telefone(TipoTelefone tipo, String numero) {
+	public TelefoneModel(TipoTelefone tipo, String numero) {
 		super();
 		this.tipo = tipo;
 		this.numero = numero;

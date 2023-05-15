@@ -3,9 +3,11 @@ package reserva_api.resources;
 import java.net.URI;
 
 import jakarta.mail.MessagingException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
-import reserva_api.dto.PessoaDto;
-import reserva_api.model.Motorista;
-import reserva_api.model.Pessoa;
+import reserva_api.dtos.PessoaDto;
+import reserva_api.models.*;
+import reserva_api.models.enums.TipoTelefone;
 import reserva_api.repositories.filters.PessoaFilter;
 import reserva_api.services.EnviaEmailService;
+import reserva_api.services.MotoristaService;
 import reserva_api.services.PessoaService;
 import reserva_api.utils.MensagemEmailUtil;
 
@@ -34,10 +37,13 @@ public class PessoaResource {
 	private PessoaService pessoaService;
 
 	@Autowired
+	private MotoristaService motoristaService;
+
+	@Autowired
 	private EnviaEmailService enviaEmailService;
 
 	@GetMapping
-	public ResponseEntity<Page<Pessoa>> buscarTodos(Pageable pageable) {
+	public ResponseEntity<Page<PessoaModel>> buscarTodos(Pageable pageable) {
 		return ResponseEntity.ok().body(pessoaService.buscarTodos(pageable));
 	}
 
@@ -47,33 +53,90 @@ public class PessoaResource {
 	}
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Pessoa> buscarPorId(@PathVariable Long id) {
-		Pessoa pessoa = pessoaService.buscarPorId(id);
-		return ResponseEntity.ok().body(pessoa);
+	public ResponseEntity<PessoaModel> buscarPorId(@PathVariable Long id) {
+		PessoaModel pessoaModel = pessoaService.buscarPorId(id);
+		return ResponseEntity.ok().body(pessoaModel);
 	}
 
+	//cadastrando pessoas
 	@PostMapping
-	public ResponseEntity<Pessoa> salvar(@Valid @RequestBody Pessoa pessoa) throws MessagingException {
-		Pessoa pessoaSalvo = pessoaService.salvar(pessoa);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pessoaSalvo.getId())
-				.toUri();
+	//o retorno de ResponseEntity sera um objeto (status e corpo) utilizado para retornar uma resposta ao usuario
+	//@Valid pode gerar o badrequest caso o valor informado pelo usuario venha invalido
+	public ResponseEntity<Object> salvar(@RequestBody @Valid PessoaDto pessoaDto) throws MessagingException {
 
-		// enviaEmailService.enviar(
-		// 		"josilenevitoriasilva@gmail.com",
-		// 		"Teste Spring Boot",
-		// 		MensagemEmailUtil.ativacaoUsuario("Josilene", "https://google.com")
-		// );
+		//---Validações
+		if(pessoaService.existsByCpf(pessoaDto.getCpf())){
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: CPF já está em uso!");
+		}
 
-		return ResponseEntity.created(uri).body(pessoaSalvo);
+		if(pessoaService.existsBySiape(pessoaDto.getSiape())){
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Siape já está em uso!");
+		}
+
+		if(pessoaService.existsByEmail(pessoaDto.getEmail())){
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Email já está em uso!");
+		}
+
+		if(motoristaService.existsByNumeroCnh(pessoaDto.getNumeroCnh())){
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: CNH já está em uso!");
+		}
+
+		//validar setor e data com valores null
+
+		//---
+
+		//so executa caso a pessoa tenha enviado todos os dados corretamente
+		var pessoaModel = new PessoaModel();
+		//Converte o valor dto para valores model
+		BeanUtils.copyProperties(pessoaDto, pessoaModel);
+
+		//como cliente nao tem acesso a esse dado, ele é cadastrado automaticamente
+		//Definindo pelo codigo o padrao de CELULAR para novos cadastros
+		var telefone = new TelefoneModel();
+		telefone.setTipo(TipoTelefone.CELULAR);
+		telefone.setNumero(pessoaDto.getTelefone());
+		pessoaModel.setTelefone(telefone);
+
+		//cadastra o setor
+		var setor = new SetorModel();
+		setor.setId(pessoaDto.getSetor());
+		pessoaModel.setSetor(setor);
+
+		//Cadastro na tabela pessoa
+		pessoaModel = pessoaService.salvar(pessoaModel);
+
+		//Cadastro na tabela motorista
+		if(pessoaDto.getNumeroCnh() != null &&
+			!pessoaDto.getNumeroCnh().isEmpty() &&
+			!pessoaDto.getNumeroCnh().isBlank()){
+
+			var motoristaModel = new MotoristaModel();
+			motoristaModel.setId(pessoaModel.getId());
+			motoristaModel.setNumeroCnh(pessoaDto.getNumeroCnh());
+			motoristaService.salvar(motoristaModel);
+		}
+
+		enviaEmailService.enviar(
+		 		pessoaDto.getEmail(),
+		 		"Ativação da Conta",
+				MensagemEmailUtil.ativacaoUsuario(pessoaDto.getNome(), "https://google.com")
+		);
+
+		//status é uma resposta
+		//body informa retorno do metodo save com os dados ja salvos no banco
+		//return ResponseEntity.status(HttpStatus.CREATED).body(pessoaModel);
+		return ResponseEntity.status(HttpStatus.CREATED).body("Cadastro realizado com sucesso!");
 	}
 
-	@PostMapping(value = "/motoristas")
-	public ResponseEntity<Pessoa> salvar(@Valid @RequestBody Motorista pessoa) {
-		Pessoa pessoaSalvo = pessoaService.salvar(pessoa);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pessoaSalvo.getId())
-				.toUri();
-		return ResponseEntity.created(uri).body(pessoaSalvo);
-	}
+//	@PostMapping(value = "/motoristas")
+//	public ResponseEntity<PessoaModel> salvar(@Valid @RequestBody MotoristaModel pessoa) {
+//		PessoaModel pessoaModelSalvo = pessoaService.salvar(pessoa);
+//		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pessoaModelSalvo.getId())
+//				.toUri();
+//		return ResponseEntity.created(uri).body(pessoaModelSalvo);
+//	}
+
+
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> excluirPorId(@PathVariable Long id) {
@@ -82,15 +145,15 @@ public class PessoaResource {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Pessoa> atualizar(@PathVariable Long id, @Valid @RequestBody Pessoa pessoa) {
-		Pessoa pessoaSalvo = pessoaService.atualizar(id, pessoa);
-		return ResponseEntity.ok(pessoaSalvo);
+	public ResponseEntity<PessoaModel> atualizar(@PathVariable Long id, @Valid @RequestBody PessoaModel pessoaModel) {
+		PessoaModel pessoaModelSalvo = pessoaService.atualizar(id, pessoaModel);
+		return ResponseEntity.ok(pessoaModelSalvo);
 	}
 
-	@PutMapping("/motoristas/{id}")
-	public ResponseEntity<Pessoa> atualizar(@PathVariable Long id, @Valid @RequestBody Motorista pessoa) {
-		Pessoa pessoaSalvo = pessoaService.atualizar(id, (Motorista) pessoa);
-		return ResponseEntity.ok(pessoaSalvo);
-	}
+//	@PutMapping("/motoristas/{id}")
+//	public ResponseEntity<PessoaModel> atualizar(@PathVariable Long id, @Valid @RequestBody MotoristaModel pessoa) {
+//		PessoaModel pessoaModelSalvo = pessoaService.atualizar(id, (MotoristaModel) pessoa);
+//		return ResponseEntity.ok(pessoaModelSalvo);
+//	}
 
 }

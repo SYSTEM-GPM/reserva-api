@@ -1,17 +1,15 @@
 package reserva_api.services;
 
-import java.util.List;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import reserva_api.model.Equipamento;
-import reserva_api.model.Local;
-import reserva_api.model.Recurso;
-import reserva_api.model.Transporte;
+import reserva_api.models.Equipamento;
+import reserva_api.models.Local;
+import reserva_api.models.Recurso;
+import reserva_api.models.Transporte;
 import reserva_api.repositories.EquipamentoRepository;
 import reserva_api.repositories.LocalRepository;
 import reserva_api.repositories.RecursoRepository;

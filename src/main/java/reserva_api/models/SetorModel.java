@@ -1,29 +1,30 @@
-package reserva_api.model;
+package reserva_api.models;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "setor")
-public class Setor {
-	
+public class SetorModel implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@NotBlank(message = "Nome é obrigatório")
+
+	@Column(nullable = false, length = 255)
+	//@NotBlank(message = "Nome é obrigatório")
 	private String nome;
 
-	public Setor() {
+	public SetorModel() {
 
 	}
 
-	public Setor(Long id, String nome) {
+	public SetorModel(Long id, String nome) {
 		super();
 		this.id = id;
 		this.nome = nome;
@@ -58,7 +59,7 @@ public class Setor {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Setor other = (Setor) obj;
+		SetorModel other = (SetorModel) obj;
 		return Objects.equals(id, other.id) && Objects.equals(nome, other.nome);
 	}
 

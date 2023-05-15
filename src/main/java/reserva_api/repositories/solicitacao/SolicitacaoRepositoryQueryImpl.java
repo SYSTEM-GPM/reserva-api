@@ -16,13 +16,13 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import reserva_api.dto.ReservaDto;
-import reserva_api.model.Equipamento;
-import reserva_api.model.Local;
-import reserva_api.model.Pessoa;
-import reserva_api.model.Recurso;
-import reserva_api.model.Solicitacao;
-import reserva_api.model.Transporte;
+import reserva_api.dtos.ReservaDto;
+import reserva_api.models.Equipamento;
+import reserva_api.models.Local;
+import reserva_api.models.PessoaModel;
+import reserva_api.models.Recurso;
+import reserva_api.models.Solicitacao;
+import reserva_api.models.Transporte;
 import reserva_api.repositories.filters.RecursoFilter;
 
 public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuery {
@@ -36,7 +36,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		CriteriaQuery<ReservaDto> criteria = builder.createQuery(ReservaDto.class);
 		Root<Solicitacao> root = criteria.from(Solicitacao.class);
 		Join<Solicitacao, Recurso> recursoJoin = root.join("recursos");
-		Join<Solicitacao, Pessoa> pessoaJoin = root.join("solicitante");
+		Join<Solicitacao, PessoaModel> pessoaJoin = root.join("solicitante");
 
 		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, null);
 
@@ -62,7 +62,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		CriteriaQuery<ReservaDto> criteria = builder.createQuery(ReservaDto.class);
 		Root<Solicitacao> root = criteria.from(Solicitacao.class);
 		Join<Solicitacao, Recurso> recursoJoin = root.join("recursos");
-		Join<Solicitacao, Pessoa> pessoaJoin = root.join("solicitante");
+		Join<Solicitacao, PessoaModel> pessoaJoin = root.join("solicitante");
 
 		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, Local.class);
 
@@ -89,7 +89,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		CriteriaQuery<ReservaDto> criteria = builder.createQuery(ReservaDto.class);
 		Root<Solicitacao> root = criteria.from(Solicitacao.class);
 		Join<Solicitacao, Recurso> recursoJoin = root.join("recursos");
-		Join<Solicitacao, Pessoa> pessoaJoin = root.join("solicitante");
+		Join<Solicitacao, PessoaModel> pessoaJoin = root.join("solicitante");
 
 		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, Equipamento.class);
 		
@@ -114,7 +114,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		CriteriaQuery<ReservaDto> criteria = builder.createQuery(ReservaDto.class);
 		Root<Solicitacao> root = criteria.from(Solicitacao.class);
 		Join<Solicitacao, Recurso> recursoJoin = root.join("recursos");
-		Join<Solicitacao, Pessoa> pessoaJoin = root.join("solicitante");
+		Join<Solicitacao, PessoaModel> pessoaJoin = root.join("solicitante");
 
 		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, Transporte.class);
 		

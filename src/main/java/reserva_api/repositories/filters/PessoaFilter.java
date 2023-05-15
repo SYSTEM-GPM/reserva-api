@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import reserva_api.model.enums.TipoPerfil;
+import reserva_api.models.enums.TipoPerfil;
 
 public class PessoaFilter {
 	private String nome;

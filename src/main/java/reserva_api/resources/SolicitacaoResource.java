@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
-import reserva_api.dto.ReservaDto;
-import reserva_api.model.Solicitacao;
-import reserva_api.model.Viagem;
+import reserva_api.dtos.ReservaDto;
+import reserva_api.models.Solicitacao;
+import reserva_api.models.Viagem;
 import reserva_api.repositories.filters.RecursoFilter;
 import reserva_api.services.SolicitacaoService;
 import reserva_api.services.ViagemService;

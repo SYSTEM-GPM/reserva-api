@@ -1,9 +1,9 @@
-package reserva_api.model;
+package reserva_api.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import reserva_api.model.enums.TipoEquipamento;
+import reserva_api.models.enums.TipoEquipamento;
 
 @Entity
 public class Equipamento extends Recurso {

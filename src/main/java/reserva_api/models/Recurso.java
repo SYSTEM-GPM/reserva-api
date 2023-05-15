@@ -1,4 +1,4 @@
-package reserva_api.model;
+package reserva_api.models;
 
 import java.io.Serializable;
 import java.util.HashSet;

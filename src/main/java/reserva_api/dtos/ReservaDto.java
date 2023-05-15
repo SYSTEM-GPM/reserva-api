@@ -1,8 +1,8 @@
-package reserva_api.dto;
+package reserva_api.dtos;
 
 import java.time.LocalDateTime;
 
-import reserva_api.model.enums.StatusSolicitacao;
+import reserva_api.models.enums.StatusSolicitacao;
 
 public class ReservaDto {
 	private Long idSolicitacao;

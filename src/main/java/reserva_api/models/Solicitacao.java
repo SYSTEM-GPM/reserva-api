@@ -1,4 +1,4 @@
-package reserva_api.model;
+package reserva_api.models;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -21,7 +21,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
-import reserva_api.model.enums.StatusSolicitacao;
+import reserva_api.models.enums.StatusSolicitacao;
 
 @Entity
 @Table(name = "solicitacao")
@@ -49,7 +49,7 @@ public class Solicitacao implements Serializable {
 	@JsonIgnoreProperties({"setor","cpf","dataNascimento"})
 	@ManyToOne
 	@JoinColumn(name = "solicitante_id")
-	private Pessoa solicitante;
+	private PessoaModel solicitante;
 	
 	@NotNull(message = "Recurso é obrigatório")
 	@ManyToMany
@@ -69,7 +69,7 @@ public class Solicitacao implements Serializable {
 
 	public Solicitacao(Long id, LocalDateTime dataInicio, LocalDateTime dataFinal, String justificativa,
 			LocalDateTime dataSolicitacao, LocalDateTime dataRetirada, LocalDateTime dataDevolucao,
-			StatusSolicitacao status, Pessoa solicitante) {
+			StatusSolicitacao status, PessoaModel solicitante) {
 		super();
 		this.id = id;
 		this.dataInicio = dataInicio;
@@ -146,11 +146,11 @@ public class Solicitacao implements Serializable {
 		this.status = status;
 	}
 
-	public Pessoa getSolicitante() {
+	public PessoaModel getSolicitante() {
 		return solicitante;
 	}
 
-	public void setSolicitante(Pessoa solicitante) {
+	public void setSolicitante(PessoaModel solicitante) {
 		this.solicitante = solicitante;
 	}
 

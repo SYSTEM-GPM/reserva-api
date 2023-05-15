@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
-import reserva_api.model.Setor;
+import reserva_api.models.SetorModel;
 import reserva_api.services.SetorService;
 
 @RestController
@@ -28,22 +28,22 @@ public class SetorResource {
 	private SetorService setorService;
 	
 	@GetMapping
-	public ResponseEntity<Page<Setor>> buscarTodos(Pageable pageable) {
+	public ResponseEntity<Page<SetorModel>> buscarTodos(Pageable pageable) {
 		return ResponseEntity.ok().body(setorService.buscarTodos(pageable));
 	}
 	
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Setor> buscarPorId(@PathVariable Long id) {
-		Setor setor = setorService.buscarPorId(id);
-		return ResponseEntity.ok().body(setor);
+	public ResponseEntity<SetorModel> buscarPorId(@PathVariable Long id) {
+		SetorModel setorModel = setorService.buscarPorId(id);
+		return ResponseEntity.ok().body(setorModel);
 	}
 	
 	@PostMapping
-	public ResponseEntity<Setor> salvar(@Valid @RequestBody Setor setor) {
-		Setor setorSalvo = setorService.salvar(setor);
+	public ResponseEntity<SetorModel> salvar(@Valid @RequestBody SetorModel setorModel) {
+		SetorModel setorModelSalvo = setorService.salvar(setorModel);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(setorSalvo.getId()).toUri();
-		return ResponseEntity.created(uri).body(setorSalvo);
+				.buildAndExpand(setorModelSalvo.getId()).toUri();
+		return ResponseEntity.created(uri).body(setorModelSalvo);
 	}
 	
 	@DeleteMapping(value = "/{id}")
@@ -53,9 +53,9 @@ public class SetorResource {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Setor> atualizar(@PathVariable Long id, @Valid @RequestBody Setor setor) {
-		Setor setorSalvo = setorService.atualizar(id, setor);
-		return ResponseEntity.ok(setorSalvo);
+	public ResponseEntity<SetorModel> atualizar(@PathVariable Long id, @Valid @RequestBody SetorModel setorModel) {
+		SetorModel setorModelSalvo = setorService.atualizar(id, setorModel);
+		return ResponseEntity.ok(setorModelSalvo);
 	}
 	
 	
