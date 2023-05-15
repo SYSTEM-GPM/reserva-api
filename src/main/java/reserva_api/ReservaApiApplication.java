@@ -65,7 +65,7 @@ public class ReservaApiApplication implements CommandLineRunner {
 	}
 
 	private void cadastrarViagem() {
-		Motorista m1 = motoristaRepository.findById(4L).orElseThrow();
+		MotoristaModel m1 = motoristaRepository.findById(4L).orElseThrow();
 		Solicitacao sol1 = solicitacaoRepository.findById(1L).orElseThrow();
 		Transporte tr1 = transporteRepository.findById(1L).orElseThrow();
 		PessoaModel p1 = pessoaRepository.findById(2L).orElseThrow();
@@ -122,10 +122,10 @@ public class ReservaApiApplication implements CommandLineRunner {
 
 		PessoaModel ps3 = new PessoaModel(null, "Kevin Geraldo Benedito Ferreira", "607.641.416-27", "31.203.387-4",
 				LocalDate.parse("24-10-1988", fdate), st3, TipoPerfil.NORMAL,new TelefoneModel(TipoTelefone.FIXO, "(62) 3896-9585"));
-		PessoaModel ps4 = new Motorista(null, "Lorenzo Augusto Corte Real", "116.741.496-97", "46.063.022-2",
-				LocalDate.parse("15-06-1980", fdate), st3, TipoPerfil.NORMAL, new TelefoneModel(TipoTelefone.FIXO, "(51) 2895-1562"),
-				"60427048705");
-		pessoaRepository.saveAll(Arrays.asList(ps1, ps2, ps3, ps4));
+//		PessoaModel ps4 = new MotoristaModel(null, "Lorenzo Augusto Corte Real", "116.741.496-97", "46.063.022-2",
+//				LocalDate.parse("15-06-1980", fdate), st3, TipoPerfil.NORMAL, new TelefoneModel(TipoTelefone.FIXO, "(51) 2895-1562"),
+//				"60427048705");
+		pessoaRepository.saveAll(Arrays.asList(ps1, ps2, ps3));
 	}
 
 }

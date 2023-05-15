@@ -15,6 +15,4 @@ public interface PessoaRepository extends JpaRepository<PessoaModel, Long>, Pess
 
     boolean existsByEmail(String email);
 
-    //boolean existsByCnh(String cnh);
-
 }

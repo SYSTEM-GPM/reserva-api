@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import reserva_api.dtos.PessoaDto;
-import reserva_api.models.Motorista;
+import reserva_api.models.MotoristaModel;
 import reserva_api.models.PessoaModel;
 import reserva_api.repositories.MotoristaRepository;
 import reserva_api.repositories.PessoaRepository;
@@ -17,9 +17,6 @@ public class PessoaService {
 
 	@Autowired
 	private PessoaRepository pessoaRepository;
-
-	@Autowired
-	private MotoristaRepository motoristaRepository;
 
 	public Page<PessoaModel> buscarTodos(Pageable pageable) {
 		return pessoaRepository.findAll(pageable);
@@ -33,12 +30,8 @@ public class PessoaService {
 		return pessoaRepository.findById(id).orElseThrow();
 	}
 
-	public PessoaModel salvar(PessoaModel pessoaModel) {
-		return pessoaRepository.save(pessoaModel);
-	}
-
-	public PessoaModel salvar(Motorista motorista) {
-		return pessoaRepository.save(motorista);
+	public PessoaModel salvar(PessoaModel pessoa) {
+		return pessoaRepository.save(pessoa);
 	}
 
 	public void excluirPorId(Long id) {
@@ -49,12 +42,6 @@ public class PessoaService {
 		PessoaModel pessoaModelSalvo = pessoaRepository.getReferenceById(id);
 		copyPessoa(pessoaModel, pessoaModelSalvo);
 		return pessoaRepository.save(pessoaModelSalvo);
-	}
-
-	public PessoaModel atualizar(Long id, Motorista motorista) {
-		Motorista pessoaSalvo = motoristaRepository.getReferenceById(id);
-		copyMotorista(motorista, pessoaSalvo);
-		return pessoaRepository.save(pessoaSalvo);
 	}
 
 	private void copyPessoa(PessoaModel pessoaModel, PessoaModel pessoaModelSalvo) {
@@ -77,30 +64,6 @@ public class PessoaService {
 
 	}
 
-	private void copyMotorista(Motorista pessoa, Motorista pessoaSalvo) {
-		if (pessoa.getNome() != null) {
-			pessoaSalvo.setNome(pessoa.getNome());
-		}
-		if (pessoa.getCpf() != null) {
-			pessoaSalvo.setCpf(pessoa.getCpf());
-		}
-		if (pessoa.getSetor() != null) {
-			pessoaSalvo.setSetor(pessoa.getSetor());
-		}
-		if (pessoa.getSiape() != null) {
-			pessoaSalvo.setSiape(pessoa.getSiape());
-
-		}
-		if (pessoa.getDataNascimento() != null) {
-			pessoaSalvo.setDataNascimento(pessoa.getDataNascimento());
-		}
-		if (pessoa.getNumeroCnh() != null) {
-			pessoaSalvo.setNumeroCnh(pessoa.getNumeroCnh());
-
-		}
-
-	}
-
 	//funcoes de validações
 	public boolean existsByCpf(String cpf) {
 		return pessoaRepository.existsByCpf(cpf);
@@ -113,9 +76,5 @@ public class PessoaService {
 	public boolean existsByEmail(String email) {
 		return pessoaRepository.existsByEmail(email);
 	}
-
-//	public boolean existsByCnh(String cnh) {
-//		return pessoaRepository.existsByCnh(cnh);
-//	}
 
 }

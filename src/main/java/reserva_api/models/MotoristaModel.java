@@ -1,39 +1,38 @@
 package reserva_api.models;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import reserva_api.models.enums.TipoPerfil;
 
 @Entity
-public class Motorista extends PessoaModel {
+@Table(name = "motorista")
+public class MotoristaModel implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
-	@NotNull(message = "Número da CNH é obrigatório")
+	@Column(nullable = false, unique = true, length = 255)
 	private String numeroCnh;
+
+	@Id
+	private Long id;
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "motorista")
 	private Set<Viagem> viagens = new HashSet<>();
 
-	public Motorista() {
-
+	public Long getId() {
+		return id;
 	}
 
-	public Motorista(Long id) {
-		super(id);
-	}
-
-	public Motorista(Long id, String nome, String cpf, String siape,
-					 LocalDate dataNascimento, SetorModel setorModel, TipoPerfil tipoPerfil, TelefoneModel telefoneModel, String numeroCnh) {
-		super(id, nome, cpf, siape, dataNascimento, setorModel, tipoPerfil, telefoneModel);
-		this.numeroCnh = numeroCnh;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getNumeroCnh() {
@@ -48,4 +47,7 @@ public class Motorista extends PessoaModel {
 		return viagens;
 	}
 
+	public void setViagens(Set<Viagem> viagens) {
+		this.viagens = viagens;
+	}
 }

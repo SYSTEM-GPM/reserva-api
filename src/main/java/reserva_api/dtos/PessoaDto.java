@@ -50,6 +50,11 @@ public class PessoaDto {
 	//@Size(min = 6)
 	//private String senha;
 
+	//Não é obrigatório, mas não permite enviar vazio
+	//@Size(min = 11, max = 11) //11 caracteres sendo EX: AM000000000
+	//@NotNull(message = "O campo CNH não pode ser enviado vazio!")
+	private String numeroCnh;
+
 	public String getNome() {
 		return nome;
 	}
@@ -123,4 +128,12 @@ public class PessoaDto {
 		this.senha = senha;
 	}
  */
+
+	public String getNumeroCnh() {
+		return numeroCnh;
+	}
+
+	public void setNumeroCnh(String numeroCnh) {
+		this.numeroCnh = numeroCnh;
+	}
 }

@@ -21,8 +21,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "viagem")
-public class
-Viagem implements Serializable {
+public class Viagem implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -38,7 +37,7 @@ Viagem implements Serializable {
 	@JsonIgnoreProperties({ "setor", "dataNascimento", "cpf", "siape" })
 	@ManyToOne
 	@JoinColumn(name = "motorista_id")
-	private Motorista motorista;
+	private MotoristaModel motorista;
 
 	@JsonIgnoreProperties("recursos")
 	@OneToOne
@@ -67,7 +66,7 @@ Viagem implements Serializable {
 	}
 
 	public Viagem(Long id, String destino, String numeroApoliceSeguro, String uriApoliceSeguro, Long quilometragemSaida,
-			Long quilometragemChegada, Motorista motorista, Solicitacao solicitacao, Transporte transporte) {
+				  Long quilometragemChegada, MotoristaModel motorista, Solicitacao solicitacao, Transporte transporte) {
 		super();
 		this.id = id;
 		this.destino = destino;
@@ -120,12 +119,12 @@ Viagem implements Serializable {
 		this.solicitacao = solicitacao;
 	}
 
-	public Motorista getMotorista() {
+	public MotoristaModel getMotorista() {
 		return motorista;
 	}
 
-	public void setMotorista(Motorista motorista) {
-		this.motorista = motorista;
+	public void setMotorista(MotoristaModel motoristaModel) {
+		this.motorista = motoristaModel;
 	}
 
 	public Transporte getTransporte() {

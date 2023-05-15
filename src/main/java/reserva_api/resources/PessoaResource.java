@@ -25,7 +25,9 @@ import reserva_api.models.*;
 import reserva_api.models.enums.TipoTelefone;
 import reserva_api.repositories.filters.PessoaFilter;
 import reserva_api.services.EnviaEmailService;
+import reserva_api.services.MotoristaService;
 import reserva_api.services.PessoaService;
+import reserva_api.utils.MensagemEmailUtil;
 
 @RestController
 @RequestMapping(value = "/pessoas")
@@ -34,8 +36,8 @@ public class PessoaResource {
 	@Autowired
 	private PessoaService pessoaService;
 
-	//@Autowired
-	//private UsuarioService usuarioService;
+	@Autowired
+	private MotoristaService motoristaService;
 
 	@Autowired
 	private EnviaEmailService enviaEmailService;
@@ -57,37 +59,27 @@ public class PessoaResource {
 	}
 
 	//cadastrando pessoas
-    /*
-	@PostMapping
-	public ResponseEntity<PessoaModel> salvar(@Valid @RequestBody PessoaModel pessoaModel) {
-		PessoaModel pessoaModelSalvo = pessoaService.salvar(pessoaModel);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pessoaModelSalvo.getId())
-				.toUri();
-		return ResponseEntity.created(uri).body(pessoaModelSalvo);
-	}
-	*/
-
 	@PostMapping
 	//o retorno de ResponseEntity sera um objeto (status e corpo) utilizado para retornar uma resposta ao usuario
 	//@Valid pode gerar o badrequest caso o valor informado pelo usuario venha invalido
 	public ResponseEntity<Object> salvar(@RequestBody @Valid PessoaDto pessoaDto) throws MessagingException {
 
 		//---Validações
-//		if(pessoaService.existsByCpf(pessoaDto.getCpf())){
-//			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: CPF já está em uso!");
-//		}
-//
-//		if(pessoaService.existsBySiape(pessoaDto.getSiape())){
-//			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Siape já está em uso!");
-//		}
-//
-//		if(pessoaService.existsByEmail(pessoaDto.getEmail())){
-//			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Email já está em uso!");
-//		}
+		if(pessoaService.existsByCpf(pessoaDto.getCpf())){
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: CPF já está em uso!");
+		}
 
-//		if(pessoaService.existsByCnh(pessoaDto.getCnh())){
-//			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: CNH já está em uso!");
-//		}
+		if(pessoaService.existsBySiape(pessoaDto.getSiape())){
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Siape já está em uso!");
+		}
+
+		if(pessoaService.existsByEmail(pessoaDto.getEmail())){
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Email já está em uso!");
+		}
+
+		if(motoristaService.existsByNumeroCnh(pessoaDto.getNumeroCnh())){
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: CNH já está em uso!");
+		}
 
 		//validar setor e data com valores null
 
@@ -113,31 +105,38 @@ public class PessoaResource {
 		//Cadastro na tabela pessoa
 		pessoaModel = pessoaService.salvar(pessoaModel);
 
-		//Cadastro na tabela usuario
-		//var usuarioModel = new UsuarioModel();
-		//usuarioModel.setPessoaId(pessoaModel.getId());
-		//usuarioModel.setEmail(pessoaDto.getEmail());
-		//usuarioModel.setSenha(pessoaDto.getSenha());
-		//usuarioService.salvar(usuarioModel);
+		//Cadastro na tabela motorista
+		if(pessoaDto.getNumeroCnh() != null &&
+			!pessoaDto.getNumeroCnh().isEmpty() &&
+			!pessoaDto.getNumeroCnh().isBlank()){
 
-		// enviaEmailService.enviar(
-		// 		"josilenevitoriasilva@gmail.com",
-		// 		"Teste Spring Boot",
-		// 		MensagemEmailUtil.ativacaoUsuario("Josilene", "https://google.com")
-		// );
+			var motoristaModel = new MotoristaModel();
+			motoristaModel.setId(pessoaModel.getId());
+			motoristaModel.setNumeroCnh(pessoaDto.getNumeroCnh());
+			motoristaService.salvar(motoristaModel);
+		}
+
+		enviaEmailService.enviar(
+		 		pessoaDto.getEmail(),
+		 		"Ativação da Conta",
+				MensagemEmailUtil.ativacaoUsuario(pessoaDto.getNome(), "https://google.com")
+		);
 
 		//status é uma resposta
 		//body informa retorno do metodo save com os dados ja salvos no banco
-		return ResponseEntity.status(HttpStatus.CREATED).body(pessoaModel);
+		//return ResponseEntity.status(HttpStatus.CREATED).body(pessoaModel);
+		return ResponseEntity.status(HttpStatus.CREATED).body("Cadastro realizado com sucesso!");
 	}
 
-	@PostMapping(value = "/motoristas")
-	public ResponseEntity<PessoaModel> salvar(@Valid @RequestBody Motorista pessoa) {
-		PessoaModel pessoaModelSalvo = pessoaService.salvar(pessoa);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pessoaModelSalvo.getId())
-				.toUri();
-		return ResponseEntity.created(uri).body(pessoaModelSalvo);
-	}
+//	@PostMapping(value = "/motoristas")
+//	public ResponseEntity<PessoaModel> salvar(@Valid @RequestBody MotoristaModel pessoa) {
+//		PessoaModel pessoaModelSalvo = pessoaService.salvar(pessoa);
+//		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pessoaModelSalvo.getId())
+//				.toUri();
+//		return ResponseEntity.created(uri).body(pessoaModelSalvo);
+//	}
+
+
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> excluirPorId(@PathVariable Long id) {
@@ -151,10 +150,10 @@ public class PessoaResource {
 		return ResponseEntity.ok(pessoaModelSalvo);
 	}
 
-	@PutMapping("/motoristas/{id}")
-	public ResponseEntity<PessoaModel> atualizar(@PathVariable Long id, @Valid @RequestBody Motorista pessoa) {
-		PessoaModel pessoaModelSalvo = pessoaService.atualizar(id, (Motorista) pessoa);
-		return ResponseEntity.ok(pessoaModelSalvo);
-	}
+//	@PutMapping("/motoristas/{id}")
+//	public ResponseEntity<PessoaModel> atualizar(@PathVariable Long id, @Valid @RequestBody MotoristaModel pessoa) {
+//		PessoaModel pessoaModelSalvo = pessoaService.atualizar(id, (MotoristaModel) pessoa);
+//		return ResponseEntity.ok(pessoaModelSalvo);
+//	}
 
 }
