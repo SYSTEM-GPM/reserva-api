@@ -1,6 +1,8 @@
 package reserva_api.resources;
 
 import java.net.URI;
+import java.util.Optional;
+import java.util.UUID;
 
 import jakarta.mail.MessagingException;
 import org.springframework.beans.BeanUtils;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
@@ -42,6 +45,7 @@ public class PessoaResource {
 	@Autowired
 	private EnviaEmailService enviaEmailService;
 
+	//visualizar pessoas
 	@GetMapping
 	public ResponseEntity<Page<PessoaModel>> buscarTodos(Pageable pageable) {
 		return ResponseEntity.ok().body(pessoaService.buscarTodos(pageable));
@@ -128,6 +132,62 @@ public class PessoaResource {
 		return ResponseEntity.status(HttpStatus.CREATED).body("Cadastro realizado com sucesso!");
 	}
 
+	//atualizando pessoas
+	@PutMapping("/{id}")
+	public ResponseEntity<Object> atualizar(@PathVariable(value = "id") Long id,
+											@RequestBody @Valid PessoaDto pessoaDto) {
+
+		//Verifica se usuário existe a partir do id enviado
+		Optional<PessoaModel> pessoaModelOptional = pessoaService.findById(id);
+		if(!pessoaModelOptional.isPresent()){
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Usuário não existe!");
+		}
+
+		//validações para valores nulos
+
+		//Identifica os dados que vao sofrer alterações
+        var pessoaModel = pessoaModelOptional.get();
+
+		pessoaModel.setNome(pessoaDto.getNome());
+		pessoaModel.setCpf(pessoaDto.getCpf());
+		pessoaModel.setSiape(pessoaDto.getSiape());
+		pessoaModel.setDataNascimento(pessoaDto.getDataNascimento());
+		pessoaModel.setTipoPerfil(pessoaDto.getTipoPerfil());
+
+		var telefone = new TelefoneModel();
+		telefone.setTipo(TipoTelefone.CELULAR);
+		telefone.setNumero(pessoaDto.getTelefone());
+		pessoaModel.setTelefone(telefone);
+
+		var setor = new SetorModel();
+		setor.setId(pessoaDto.getSetor());
+		pessoaModel.setSetor(setor);
+
+		pessoaModel.setEmail(pessoaDto.getEmail());
+		//pessoaModel.setSenha(pessoaDto.getSenha());
+
+		pessoaModel = pessoaService.salvar(pessoaModel);
+
+		//remover validação para caso a pessoa queria retirar cnh
+		if(pessoaDto.getNumeroCnh() != null &&
+			!pessoaDto.getNumeroCnh().isEmpty() &&
+			!pessoaDto.getNumeroCnh().isBlank()){
+
+			var motoristaModel = new MotoristaModel();
+			motoristaModel.setId(pessoaModel.getId());
+			motoristaModel.setNumeroCnh(pessoaDto.getNumeroCnh());
+			motoristaService.salvar(motoristaModel);
+		}
+
+		//return ResponseEntity.status(HttpStatus.OK).body(pessoaModel);
+		return ResponseEntity.status(HttpStatus.OK).body("Atualização realizada com sucesso!");
+	}
+	@DeleteMapping(value = "/{id}")
+	public ResponseEntity<Void> excluirPorId(@PathVariable Long id) {
+		pessoaService.excluirPorId(id);
+		return ResponseEntity.noContent().build();
+	}
+
 //	@PostMapping(value = "/motoristas")
 //	public ResponseEntity<PessoaModel> salvar(@Valid @RequestBody MotoristaModel pessoa) {
 //		PessoaModel pessoaModelSalvo = pessoaService.salvar(pessoa);
@@ -135,20 +195,6 @@ public class PessoaResource {
 //				.toUri();
 //		return ResponseEntity.created(uri).body(pessoaModelSalvo);
 //	}
-
-
-
-	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> excluirPorId(@PathVariable Long id) {
-		pessoaService.excluirPorId(id);
-		return ResponseEntity.noContent().build();
-	}
-
-	@PutMapping("/{id}")
-	public ResponseEntity<PessoaModel> atualizar(@PathVariable Long id, @Valid @RequestBody PessoaModel pessoaModel) {
-		PessoaModel pessoaModelSalvo = pessoaService.atualizar(id, pessoaModel);
-		return ResponseEntity.ok(pessoaModelSalvo);
-	}
 
 //	@PutMapping("/motoristas/{id}")
 //	public ResponseEntity<PessoaModel> atualizar(@PathVariable Long id, @Valid @RequestBody MotoristaModel pessoa) {
