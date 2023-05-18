@@ -12,6 +12,8 @@ import reserva_api.repositories.MotoristaRepository;
 import reserva_api.repositories.PessoaRepository;
 import reserva_api.repositories.filters.PessoaFilter;
 
+import java.util.Optional;
+
 @Service
 public class PessoaService {
 
@@ -38,32 +40,6 @@ public class PessoaService {
 		pessoaRepository.deleteById(id);
 	}
 
-	public PessoaModel atualizar(Long id, PessoaModel pessoaModel) {
-		PessoaModel pessoaModelSalvo = pessoaRepository.getReferenceById(id);
-		copyPessoa(pessoaModel, pessoaModelSalvo);
-		return pessoaRepository.save(pessoaModelSalvo);
-	}
-
-	private void copyPessoa(PessoaModel pessoaModel, PessoaModel pessoaModelSalvo) {
-		if (pessoaModel.getNome() != null) {
-			pessoaModelSalvo.setNome(pessoaModel.getNome());
-		}
-		if (pessoaModel.getCpf() != null) {
-			pessoaModelSalvo.setCpf(pessoaModel.getCpf());
-		}
-		if (pessoaModel.getSetor() != null) {
-			pessoaModelSalvo.setSetor(pessoaModel.getSetor());
-		}
-		if (pessoaModel.getSiape() != null) {
-			pessoaModelSalvo.setSiape(pessoaModel.getSiape());
-
-		}
-		if (pessoaModel.getDataNascimento() != null) {
-			pessoaModelSalvo.setDataNascimento(pessoaModel.getDataNascimento());
-		}
-
-	}
-
 	//funcoes de validações
 	public boolean existsByCpf(String cpf) {
 		return pessoaRepository.existsByCpf(cpf);
@@ -75,6 +51,10 @@ public class PessoaService {
 
 	public boolean existsByEmail(String email) {
 		return pessoaRepository.existsByEmail(email);
+	}
+
+	public Optional<PessoaModel> findById(Long id) {
+		return pessoaRepository.findById(id);
 	}
 
 }
