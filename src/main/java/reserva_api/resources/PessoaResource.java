@@ -1,8 +1,6 @@
 package reserva_api.resources;
 
-import java.net.URI;
 import java.util.Optional;
-import java.util.UUID;
 
 import jakarta.mail.MessagingException;
 import org.springframework.beans.BeanUtils;
@@ -19,8 +17,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
 import reserva_api.dtos.PessoaDto;
@@ -182,24 +178,11 @@ public class PessoaResource {
 		//return ResponseEntity.status(HttpStatus.OK).body(pessoaModel);
 		return ResponseEntity.status(HttpStatus.OK).body("Atualização realizada com sucesso!");
 	}
+
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> excluirPorId(@PathVariable Long id) {
 		pessoaService.excluirPorId(id);
 		return ResponseEntity.noContent().build();
 	}
-
-//	@PostMapping(value = "/motoristas")
-//	public ResponseEntity<PessoaModel> salvar(@Valid @RequestBody MotoristaModel pessoa) {
-//		PessoaModel pessoaModelSalvo = pessoaService.salvar(pessoa);
-//		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pessoaModelSalvo.getId())
-//				.toUri();
-//		return ResponseEntity.created(uri).body(pessoaModelSalvo);
-//	}
-
-//	@PutMapping("/motoristas/{id}")
-//	public ResponseEntity<PessoaModel> atualizar(@PathVariable Long id, @Valid @RequestBody MotoristaModel pessoa) {
-//		PessoaModel pessoaModelSalvo = pessoaService.atualizar(id, (MotoristaModel) pessoa);
-//		return ResponseEntity.ok(pessoaModelSalvo);
-//	}
 
 }
