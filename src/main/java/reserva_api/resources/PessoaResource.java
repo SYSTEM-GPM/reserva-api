@@ -21,10 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import reserva_api.dtos.CriarSenhaDto;
-import reserva_api.dtos.LoginDto;
-import reserva_api.dtos.PessoaDto;
-import reserva_api.dtos.ValidaCodigoAtivacaoDto;
+import reserva_api.dtos.*;
 import reserva_api.models.*;
 import reserva_api.models.enums.StatusConta;
 import reserva_api.models.enums.TipoTelefone;
@@ -79,6 +76,10 @@ public class PessoaResource {
 
 		var pessoa = pessoaModel.get();
 
+		if(pessoa.getStatus() == StatusConta.DESATIVADA) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: Conta de usuário desativada!");
+		}
+
 		if (pessoa.getCodigoAtivacao() == null || !pessoa.getCodigoAtivacao().equals(validaCodigoAtivacaoDto.getCodigo())) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: Código de ativação inválido!");
 		}
@@ -86,9 +87,9 @@ public class PessoaResource {
 		return ResponseEntity.ok().body(pessoa);
 	}
 
-	@PostMapping("/enviar-codigo")
-	public ResponseEntity<Object> enviarCodigoAtivacao(@RequestBody @Valid ValidaCodigoAtivacaoDto validaCodigoAtivacaoDto) {
-		var pessoaModel = pessoaService.buscarPorEmail(validaCodigoAtivacaoDto.getEmail());
+	@PostMapping("/envia-codigo")
+	public ResponseEntity<Object> enviaCodigoAtivacao(@RequestBody @Valid EnviaCodigoDto enviaCodigoDto) throws MessagingException {
+		var pessoaModel = pessoaService.buscarPorEmail(enviaCodigoDto.getEmail());
 
 		if(pessoaModel.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Conta de usuário não encontrada!");
@@ -96,11 +97,47 @@ public class PessoaResource {
 
 		var pessoa = pessoaModel.get();
 
-		if (pessoa.getCodigoAtivacao() == null || !pessoa.getCodigoAtivacao().equals(validaCodigoAtivacaoDto.getCodigo())) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: Código de ativação inválido!");
+		if(pessoa.getStatus() == StatusConta.DESATIVADA) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: Conta de usuário desativada!");
 		}
 
-		return ResponseEntity.ok().body(pessoa);
+		String resposta = "";
+
+		boolean comSenha = pessoa.getSenha() != null;
+		boolean comCodigo = pessoa.getCodigoAtivacao() != null;
+
+		if (!comCodigo && pessoa.getStatus() == StatusConta.PENDENTE_ATIVACAO_USUARIO) {
+			resposta = "Código de ativação de conta enviado com sucesso!";
+
+			pessoa.setCodigoAtivacao(geraNumeroAleatorio());
+			enviaEmailService.enviar(
+					pessoa.getEmail(),
+					"Ativação da Conta",
+					MensagemEmailUtil.ativacaoUsuario(pessoa)
+			);
+		} else if (comSenha && pessoa.getStatus() == StatusConta.ATIVADA) {
+			resposta = "Código para recuperação de acesso enviado com sucesso!";
+
+			pessoa.setCodigoAtivacao(geraNumeroAleatorio());
+			enviaEmailService.enviar(
+					pessoa.getEmail(),
+					"Recuperação da conta",
+					MensagemEmailUtil.recuperacaoConta(pessoa)
+			);
+		} else if (!comSenha && pessoa.getStatus() == StatusConta.PENDENTE_ATIVACAO_USUARIO) {
+			resposta = "Código de ativação de reenviado com sucesso!";
+
+			pessoa.setCodigoAtivacao(geraNumeroAleatorio());
+			enviaEmailService.enviar(
+					pessoa.getEmail(),
+					"Ativação da Conta",
+					MensagemEmailUtil.envioCodigoUsuario(pessoa)
+			);
+		}
+
+		pessoaService.salvar(pessoa);
+
+		return ResponseEntity.ok().body(resposta);
 	}
 
 	@PutMapping("/{id}/senha")
@@ -127,7 +164,7 @@ public class PessoaResource {
 
 		pessoaService.salvar(pessoaModel);
 
-		return ResponseEntity.ok().body("Usuário ativado com sucesso!");
+		return ResponseEntity.ok().body("Senha salva com sucesso!");
 	}
 
 	@PostMapping("/login")
@@ -200,15 +237,15 @@ public class PessoaResource {
 		// Define status da conta
 		pessoaModel.setStatus(StatusConta.PENDENTE_ATIVACAO_USUARIO);
 		// Define codigo de ativacao para enviar
-		pessoaModel.setCodigoAtivacao(geraNumeroAleatorio());
+//		pessoaModel.setCodigoAtivacao(geraNumeroAleatorio());
 
 		//Cadastro na tabela pessoa
 		pessoaModel = pessoaService.salvar(pessoaModel);
 
 		//Cadastro na tabela motorista
 		if(pessoaDto.getNumeroCnh() != null &&
-			!pessoaDto.getNumeroCnh().isEmpty() &&
-			!pessoaDto.getNumeroCnh().isBlank()){
+				!pessoaDto.getNumeroCnh().isEmpty() &&
+				!pessoaDto.getNumeroCnh().isBlank()){
 
 			var motoristaModel = new MotoristaModel();
 			motoristaModel.setId(pessoaModel.getId());
@@ -216,11 +253,11 @@ public class PessoaResource {
 			motoristaService.salvar(motoristaModel);
 		}
 
-		enviaEmailService.enviar(
-		 		pessoaDto.getEmail(),
-		 		"Ativação da Conta",
-				MensagemEmailUtil.ativacaoUsuario(pessoaModel)
-		);
+//		enviaEmailService.enviar(
+//				pessoaDto.getEmail(),
+//				"Ativação da Conta",
+//				MensagemEmailUtil.ativacaoUsuario(pessoaModel)
+//		);
 
 		//status é uma resposta
 		//body informa retorno do metodo save com os dados ja salvos no banco
@@ -266,8 +303,8 @@ public class PessoaResource {
 
 		//remover validação para caso a pessoa queria retirar cnh
 		if(pessoaDto.getNumeroCnh() != null &&
-			!pessoaDto.getNumeroCnh().isEmpty() &&
-			!pessoaDto.getNumeroCnh().isBlank()){
+				!pessoaDto.getNumeroCnh().isEmpty() &&
+				!pessoaDto.getNumeroCnh().isBlank()){
 
 			var motoristaModel = new MotoristaModel();
 			motoristaModel.setId(pessoaModel.getId());
