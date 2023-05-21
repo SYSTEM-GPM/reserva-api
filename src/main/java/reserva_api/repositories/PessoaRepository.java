@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import reserva_api.models.PessoaModel;
 import reserva_api.repositories.pessoa.PessoaRepositoryQuery;
 
+import java.util.Optional;
+
 @Repository
 public interface PessoaRepository extends JpaRepository<PessoaModel, Long>, PessoaRepositoryQuery  {
 
@@ -15,4 +17,5 @@ public interface PessoaRepository extends JpaRepository<PessoaModel, Long>, Pess
 
     boolean existsByEmail(String email);
 
+    Optional<PessoaModel> findByEmail(String email);
 }

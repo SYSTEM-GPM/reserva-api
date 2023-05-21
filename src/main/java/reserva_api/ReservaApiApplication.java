@@ -12,10 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import reserva_api.models.*;
 import reserva_api.models.SetorModel;
-import reserva_api.models.enums.StatusSolicitacao;
-import reserva_api.models.enums.TipoEquipamento;
-import reserva_api.models.enums.TipoPerfil;
-import reserva_api.models.enums.TipoTelefone;
+import reserva_api.models.enums.*;
 import reserva_api.repositories.MotoristaRepository;
 import reserva_api.repositories.PessoaRepository;
 import reserva_api.repositories.RecursoRepository;
@@ -115,13 +112,13 @@ public class ReservaApiApplication implements CommandLineRunner {
 		setorRepository.saveAll(Arrays.asList(st1, st2, st3, st4, st5));
 
 		PessoaModel ps1 = new PessoaModel(null, "Agatha Sueli Marcela Rezende", "424.554.048-62", "28.507.242-0",
-				LocalDate.parse("04-03-1985", fdate), st1, TipoPerfil.NORMAL,new TelefoneModel(TipoTelefone.CELULAR, "(47) 99468-9837"));
+				LocalDate.parse("04-03-1985", fdate), st1, TipoPerfil.NORMAL,new TelefoneModel(TipoTelefone.CELULAR, "(47) 99468-9837"), StatusConta.ATIVADA);
 
 		PessoaModel ps2 = new PessoaModel(null, "Emilly Bruna de Paula", "658.439.303-86", "14.151.755-4",
-				LocalDate.parse("20-04-1977", fdate), st2, TipoPerfil.NORMAL,new TelefoneModel(TipoTelefone.CELULAR, "(31) 98984-6061"));
+				LocalDate.parse("20-04-1977", fdate), st2, TipoPerfil.NORMAL,new TelefoneModel(TipoTelefone.CELULAR, "(31) 98984-6061"), StatusConta.ATIVADA);
 
 		PessoaModel ps3 = new PessoaModel(null, "Kevin Geraldo Benedito Ferreira", "607.641.416-27", "31.203.387-4",
-				LocalDate.parse("24-10-1988", fdate), st3, TipoPerfil.NORMAL,new TelefoneModel(TipoTelefone.FIXO, "(62) 3896-9585"));
+				LocalDate.parse("24-10-1988", fdate), st3, TipoPerfil.NORMAL,new TelefoneModel(TipoTelefone.FIXO, "(62) 3896-9585"), StatusConta.ATIVADA);
 //		PessoaModel ps4 = new MotoristaModel(null, "Lorenzo Augusto Corte Real", "116.741.496-97", "46.063.022-2",
 //				LocalDate.parse("15-06-1980", fdate), st3, TipoPerfil.NORMAL, new TelefoneModel(TipoTelefone.FIXO, "(51) 2895-1562"),
 //				"60427048705");

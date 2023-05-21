@@ -2,14 +2,13 @@ package reserva_api.utils;
 
 import reserva_api.models.PessoaModel;
 
+import java.text.MessageFormat;
+
 public class  MensagemEmailUtil {
-    public static String ativacaoUsuario(String nome, String link) {
+    public static String ativacaoUsuario(PessoaModel pessoa) {
         return
-            "<h3>Ola "+nome+"!</h3>" +
-            "<p>Sua conta foi registrada com sucesso nos <strong>Sistema GPMM</strong> pelo adminstrador!</p>" +
-            "<p>Para ter acasso ao sistema, por favor clique no <a href='"+link+";'>link</a> e crie sua senha.</p></br>" +
-            "<p>Atenciosamente,</p>" +
-            "<p><strong>Equipe do Sistema GPMM</strong></p>";
+                MessageFormat.format("<h2>Ola, {0}!</h2><p>Sua conta foi registrada com sucesso nos <strong>Sistema GPMM</strong> pelo adminstrador!</p><p>Para ter acesso ao sistema, por favor acesse ao <a href=''http://localhost:3000/difinir-rota/?email={1}''>site</a> e infome o código abaixo:</p></br><h3><strong>{2}</strong></h3><p>Atenciosamente,</p><p><strong>Equipe do Sistema GPMM</strong></p>",
+                        pessoa.getNome(), pessoa.getEmail(), pessoa.getCodigoAtivacao());
     }
 
     // envio para o ADMIN confirmar a conta

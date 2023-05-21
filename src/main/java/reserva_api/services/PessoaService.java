@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import reserva_api.dtos.CriarSenhaDto;
 import reserva_api.dtos.PessoaDto;
 import reserva_api.models.MotoristaModel;
 import reserva_api.models.PessoaModel;
@@ -12,6 +13,7 @@ import reserva_api.repositories.MotoristaRepository;
 import reserva_api.repositories.PessoaRepository;
 import reserva_api.repositories.filters.PessoaFilter;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
@@ -23,13 +25,17 @@ public class PessoaService {
 	public Page<PessoaModel> buscarTodos(Pageable pageable) {
 		return pessoaRepository.findAll(pageable);
 	}
-	
+
 	public Page<PessoaDto> filtarTodas(PessoaFilter pessoaFilter,Pageable pageable) {
 		return pessoaRepository.filtrarPessoa(pessoaFilter, pageable);
 	}
 
-	public PessoaModel buscarPorId(Long id) {
-		return pessoaRepository.findById(id).orElseThrow();
+	public Optional<PessoaModel> buscarPorId(Long id) {
+		return pessoaRepository.findById(id);
+	}
+
+	public Optional<PessoaModel> buscarPorEmail(String email) {
+		return pessoaRepository.findByEmail(email);
 	}
 
 	public PessoaModel salvar(PessoaModel pessoa) {
