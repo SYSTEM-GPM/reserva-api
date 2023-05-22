@@ -17,7 +17,6 @@ public class SetorModel implements Serializable {
 	private Long id;
 
 	@Column(nullable = false, length = 255)
-	//@NotBlank(message = "Nome é obrigatório")
 	private String nome;
 
 	public SetorModel() {

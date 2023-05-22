@@ -2,9 +2,11 @@ package reserva_api.resources;
 
 import java.net.URI;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,10 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
-import reserva_api.models.Equipamento;
-import reserva_api.models.Local;
-import reserva_api.models.Recurso;
-import reserva_api.models.Transporte;
+import reserva_api.dtos.LocalDto;
+import reserva_api.dtos.TransporteDto;
+import reserva_api.models.*;
 import reserva_api.services.RecursoService;
 
 @RestController
@@ -47,44 +48,79 @@ public class RecursoResource {
 		return ResponseEntity.noContent().build();
 	}
 
+	//Buscar todos os transportes
 	@GetMapping(value = "/transportes")
-	public ResponseEntity<Page<Transporte>> buscarTransportes(Pageable pageable) {
+	public ResponseEntity<Page<TransporteModel>> buscarTransportes(Pageable pageable) {
 		return ResponseEntity.ok().body(recursoService.buscarTransportes(pageable));
 	}
 
+	//Cadastrar transportes
 	@PostMapping(value = "/transportes")
-	public ResponseEntity<Recurso> salvar(@Valid @RequestBody Transporte transporte) {
-		Recurso recursoSalvo = recursoService.salvar(transporte);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(recursoSalvo.getId())
-				.toUri();
-		return ResponseEntity.created(uri).body(recursoSalvo);
+	public ResponseEntity<Object> salvar(@RequestBody @Valid TransporteDto transporteDto) {
+
+		if(recursoService.existsByDescricao(transporteDto.getDescricao())){
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Transporte já existe!");
+		}
+
+		var transporteModel = new TransporteModel();
+		BeanUtils.copyProperties(transporteDto, transporteModel);
+		recursoService.salvar(transporteModel);
+
+		//Recurso recursoSalvo = recursoService.salvar(transporteModel);
+		//return ResponseEntity.status(HttpStatus.CREATED).body(recursoSalvo);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body("Transporte cadastrado com sucesso");
 	}
 
+	//Atualizar transportes
 	@PutMapping("/transportes/{id}")
-	public ResponseEntity<Recurso> atualizar(@PathVariable Long id, @Valid @RequestBody Transporte transporte) {
-		Recurso recursoSalvo = recursoService.atualizar(id, transporte);
-		return ResponseEntity.ok(recursoSalvo);
+	public ResponseEntity<Object> atualizar(@PathVariable(value = "id") Long id,
+											@RequestBody @Valid TransporteDto transporteDto) {
+
+		//Recurso recursoSalvo = recursoService.atualizar(id, transporteDto);
+		//return ResponseEntity.ok(recursoSalvo);
+
+		recursoService.atualizar(id, transporteDto);
+		return ResponseEntity.status(HttpStatus.OK).body("Atualização realizada com sucesso!");
 	}
 
+	//Buscar todos os locais
 	@GetMapping(value = "/locais")
-	public ResponseEntity<Page<Local>> buscarLocais(Pageable pageable) {
+	public ResponseEntity<Page<LocalModel>> buscarLocais(Pageable pageable) {
 		return ResponseEntity.ok().body(recursoService.buscarLocais(pageable));
 	}
 
+	//Cadastrar local
 	@PostMapping(value = "/locais")
-	public ResponseEntity<Recurso> salvar(@Valid @RequestBody Local local) {
-		Recurso recursoSalvo = recursoService.salvar(local);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(recursoSalvo.getId())
-				.toUri();
-		return ResponseEntity.created(uri).body(recursoSalvo);
+	public ResponseEntity<Object> salvar(@RequestBody @Valid LocalDto localDto) {
+
+		if(recursoService.existsByDescricao(localDto.getDescricao())){
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Local já existe!");
+		}
+
+		var localModel = new LocalModel();
+		BeanUtils.copyProperties(localDto, localModel);
+		recursoService.salvar(localModel);
+
+		//Recurso recursoSalvo = recursoService.salvar(localModel);
+		//return ResponseEntity.status(HttpStatus.CREATED).body(recursoSalvo);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body("Local cadastrado com sucesso");
 	}
 
+	//Atualizar Local
 	@PutMapping("/locais/{id}")
-	public ResponseEntity<Recurso> atualizar(@PathVariable Long id, @Valid @RequestBody Local local) {
-		Recurso recursoSalvo = recursoService.atualizar(id, local);
-		return ResponseEntity.ok(recursoSalvo);
+	public ResponseEntity<Object> atualizar(@PathVariable(value = "id") Long id,
+											@RequestBody @Valid LocalDto localDto) {
+
+		//Recurso recursoSalvo = recursoService.atualizar(id, localDto);
+		//return ResponseEntity.ok(recursoSalvo);
+
+		recursoService.atualizar(id, localDto);
+		return ResponseEntity.status(HttpStatus.OK).body("Atualização realizada com sucesso!");
 	}
 
+	/*
 	@GetMapping(value = "/equipamentos")
 	public ResponseEntity<Page<Equipamento>> buscarEquipamentos(Pageable pageable) {
 		return ResponseEntity.ok().body(recursoService.buscarEquipamentos(pageable));
@@ -103,5 +139,6 @@ public class RecursoResource {
 		Recurso recursoSalvo = recursoService.atualizar(id, equipamento);
 		return ResponseEntity.ok(recursoSalvo);
 	}
+	*/
 
 }

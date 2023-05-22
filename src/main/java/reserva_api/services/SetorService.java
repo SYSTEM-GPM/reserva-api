@@ -1,11 +1,14 @@
 package reserva_api.services;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import reserva_api.dtos.SetorDto;
 import reserva_api.models.SetorModel;
+import reserva_api.models.TransporteModel;
 import reserva_api.repositories.SetorRepository;
 
 @Service
@@ -30,14 +33,11 @@ public class SetorService {
 		setorRepository.deleteById(id);
 	}
 
-	public SetorModel atualizar(Long id, SetorModel setorModel) {
-		SetorModel setorModelSalvo = setorRepository.getReferenceById(id);
-		copySetor(setorModel, setorModelSalvo);
+	public SetorModel atualizar(Long id, SetorDto setorDto) {
+		SetorModel setorModelSalvo = setorRepository.findById(id).orElseThrow();
+		BeanUtils.copyProperties(setorDto, setorModelSalvo, "id");
 		return setorRepository.save(setorModelSalvo);
 	}
 
-	private void copySetor(SetorModel setorModel, SetorModel setorModelSalvo) {
-		setorModelSalvo.setNome(setorModel.getNome());
-	}
-
+	public boolean existsByNome(String nome) { return setorRepository.existsByNome(nome); }
 }

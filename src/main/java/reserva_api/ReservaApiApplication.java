@@ -67,7 +67,7 @@ public class ReservaApiApplication implements CommandLineRunner {
 	private void cadastrarViagem() {
 		MotoristaModel m1 = motoristaRepository.findById(4L).orElseThrow();
 		Solicitacao sol1 = solicitacaoRepository.findById(1L).orElseThrow();
-		Transporte tr1 = transporteRepository.findById(1L).orElseThrow();
+		TransporteModel tr1 = transporteRepository.findById(1L).orElseThrow();
 		PessoaModel p1 = pessoaRepository.findById(2L).orElseThrow();
 		PessoaModel p2 = pessoaRepository.findById(4L).orElseThrow();
 
@@ -84,20 +84,20 @@ public class ReservaApiApplication implements CommandLineRunner {
 		Solicitacao sl1 = new Solicitacao(null, LocalDateTime.parse("25-04-2023 10:00", ftr),
 				LocalDateTime.parse("25-04-2023 12:00", ftr), " Viagem para tabalho de campo.", LocalDateTime.now(),
 				null, null, StatusSolicitacao.SOLICITADO, new PessoaModel(1L));
-		sl1.getRecursos().add(new Transporte(1L));
+		sl1.getRecursos().add(new TransporteModel(1L));
 		sl1.getRecursos().add(new Equipamento(6L));
-		sl1.getRecursos().add(new Local(3L));
+		sl1.getRecursos().add(new LocalModel(3L));
 		solicitacaoRepository.save(sl1);
 
 	}
 
 	private void cadastrarRecursos() {
-		Recurso rc1 = new Transporte(null, "Pickup Nissan", "HTG-1262", 4);
-		Recurso rc2 = new Transporte(null, "Van Mercedes-Benz", "IAD-2304", 16);
+		Recurso rc1 = new TransporteModel(null, "Pickup Nissan", "HTG-1262", 4);
+		Recurso rc2 = new TransporteModel(null, "Van Mercedes-Benz", "IAD-2304", 16);
 
-		Recurso rc3 = new Local(null, "Auditório geral", "A101", 200);
-		Recurso rc4 = new Local(null, "Mini auditório", "A210", 30);
-		Recurso rc5 = new Local(null, "Sala de reunião", "C101", 20);
+		Recurso rc3 = new LocalModel(null, "Auditório geral", "A101", 200);
+		Recurso rc4 = new LocalModel(null, "Mini auditório", "A210", 30);
+		Recurso rc5 = new LocalModel(null, "Sala de reunião", "C101", 20);
 
 		Recurso rc6 = new Equipamento(null, "Projeto de slide 01", "2001547", TipoEquipamento.PROJETOR);
 		Recurso rc7 = new Equipamento(null, "Projeto de slide 02", "2001548", TipoEquipamento.PROJETOR);

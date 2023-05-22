@@ -8,4 +8,5 @@ import reserva_api.models.Recurso;
 @Repository
 public interface RecursoRepository extends JpaRepository<Recurso, Long>  {
 
+    boolean existsByDescricao(String descricao);
 }

@@ -47,7 +47,7 @@ public class Viagem implements Serializable {
 	@JsonIgnoreProperties("viagens")
 	@ManyToOne
 	@JoinColumn(name = "transporte_id")
-	private Transporte transporte;
+	private TransporteModel transporte;
 	
 	@JsonIgnoreProperties({"siape","setor","numeroCnh"})
 	@ManyToMany
@@ -66,7 +66,7 @@ public class Viagem implements Serializable {
 	}
 
 	public Viagem(Long id, String destino, String numeroApoliceSeguro, String uriApoliceSeguro, Long quilometragemSaida,
-				  Long quilometragemChegada, MotoristaModel motorista, Solicitacao solicitacao, Transporte transporte) {
+				  Long quilometragemChegada, MotoristaModel motorista, Solicitacao solicitacao, TransporteModel transporte) {
 		super();
 		this.id = id;
 		this.destino = destino;
@@ -127,11 +127,11 @@ public class Viagem implements Serializable {
 		this.motorista = motoristaModel;
 	}
 
-	public Transporte getTransporte() {
+	public TransporteModel getTransporte() {
 		return transporte;
 	}
 
-	public void setTransporte(Transporte transporte) {
+	public void setTransporte(TransporteModel transporte) {
 		this.transporte = transporte;
 	}
 

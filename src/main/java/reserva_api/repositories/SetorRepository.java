@@ -8,4 +8,5 @@ import reserva_api.models.SetorModel;
 @Repository
 public interface SetorRepository extends JpaRepository<SetorModel, Long>  {
 
+    boolean existsByNome(String nome);
 }
