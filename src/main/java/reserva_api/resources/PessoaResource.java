@@ -11,14 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import reserva_api.dtos.*;
@@ -87,8 +80,8 @@ public class PessoaResource {
 		return ResponseEntity.ok().body(pessoa);
 	}
 
-	@PostMapping("/envia-codigo")
-	public ResponseEntity<Object> enviaCodigoAtivacao(@RequestBody @Valid EnviaCodigoDto enviaCodigoDto) throws MessagingException {
+	@PostMapping("/envia-codigo/{opcao}")
+	public ResponseEntity<Object> enviaCodigoAtivacao(@PathVariable(value = "opcao") String opcao, @RequestBody @Valid EnviaCodigoDto enviaCodigoDto) throws MessagingException {
 		var pessoaModel = pessoaService.buscarPorEmail(enviaCodigoDto.getEmail());
 
 		if(pessoaModel.isEmpty()) {
@@ -102,42 +95,60 @@ public class PessoaResource {
 		}
 
 		String resposta = "";
+		var status = HttpStatus.OK;
 
 		boolean comSenha = pessoa.getSenha() != null;
-		boolean comCodigo = pessoa.getCodigoAtivacao() != null;
 
-		if (!comCodigo && pessoa.getStatus() == StatusConta.PENDENTE_ATIVACAO_USUARIO) {
-			resposta = "Código de ativação de conta enviado com sucesso!";
+		if (opcao.equals("envio-admin")) {
+			if(pessoa.getStatus() != StatusConta.PENDENTE_ATIVACAO_USUARIO) {
+				status = HttpStatus.BAD_REQUEST;
+				resposta = "Erro: Conta de usuário já ativada!";
+			} else {
+				resposta = "Código de ativação de conta enviado com sucesso!";
 
-			pessoa.setCodigoAtivacao(geraNumeroAleatorio());
-			enviaEmailService.enviar(
-					pessoa.getEmail(),
-					"Ativação da Conta",
-					MensagemEmailUtil.ativacaoUsuario(pessoa)
-			);
-		} else if (comSenha && pessoa.getStatus() == StatusConta.ATIVADA) {
-			resposta = "Código para recuperação de acesso enviado com sucesso!";
+				pessoa.setCodigoAtivacao(geraNumeroAleatorio());
+				enviaEmailService.enviar(
+						pessoa.getEmail(),
+						"Ativação da Conta",
+						MensagemEmailUtil.ativacaoUsuario(pessoa)
+				);
+			}
+		} else if (opcao.equals("ativacao-usuario")) {
+			if(comSenha && pessoa.getStatus() != StatusConta.PENDENTE_ATIVACAO_USUARIO) {
+				status = HttpStatus.BAD_REQUEST;
+				resposta = "Erro: Conta de usuário já ativada!";
+			} else {
+				resposta = "Código de ativação de reenviado com sucesso!";
 
-			pessoa.setCodigoAtivacao(geraNumeroAleatorio());
-			enviaEmailService.enviar(
-					pessoa.getEmail(),
-					"Recuperação da conta",
-					MensagemEmailUtil.recuperacaoConta(pessoa)
-			);
-		} else if (!comSenha && pessoa.getStatus() == StatusConta.PENDENTE_ATIVACAO_USUARIO) {
-			resposta = "Código de ativação de reenviado com sucesso!";
+				pessoa.setCodigoAtivacao(geraNumeroAleatorio());
+				enviaEmailService.enviar(
+						pessoa.getEmail(),
+						"Ativação da Conta",
+						MensagemEmailUtil.envioCodigoUsuario(pessoa)
+				);
+			}
+		} else if (opcao.equals("recuperar-conta")) {
+			if(pessoa.getStatus() != StatusConta.ATIVADA && !comSenha) {
+				status = HttpStatus.BAD_REQUEST;
+				resposta = "Erro: Conta pendente de ativação!";
+			} else {
+				resposta = "Código para recuperação de acesso enviado com sucesso!";
 
-			pessoa.setCodigoAtivacao(geraNumeroAleatorio());
-			enviaEmailService.enviar(
-					pessoa.getEmail(),
-					"Ativação da Conta",
-					MensagemEmailUtil.envioCodigoUsuario(pessoa)
-			);
+				pessoa.setCodigoAtivacao(geraNumeroAleatorio());
+				enviaEmailService.enviar(
+						pessoa.getEmail(),
+						"Recuperação da conta",
+						MensagemEmailUtil.recuperacaoConta(pessoa)
+				);
+			}
+		} else {
+			resposta = "Erro: Opcao não encontrada";
+			status = HttpStatus.NOT_FOUND;
 		}
 
-		pessoaService.salvar(pessoa);
+        pessoaService.salvar(pessoa);
 
-		return ResponseEntity.ok().body(resposta);
+        return ResponseEntity.status(status).body(resposta);
 	}
 
 	@PutMapping("/{id}/senha")
@@ -152,10 +163,6 @@ public class PessoaResource {
 
 		if (pessoaModel.getCodigoAtivacao() == null || !pessoaModel.getCodigoAtivacao().equals(criarSenhaDto.getCodigo())) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: Código de ativação inválido!");
-		}
-
-		if(pessoaModel.getStatus().equals(StatusConta.ATIVADA)) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: Conta de usuário já ativada!");
 		}
 
 		pessoaModel.setSenha(passwordEncoder().encode(criarSenhaDto.getSenha()));
