@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -64,6 +65,11 @@ public class PessoaModel implements Serializable {
 	@JsonIgnore
 	@OneToMany(mappedBy = "solicitante")
 	private Set<Solicitacao> solicitacoes = new HashSet<>();
+
+	@OneToOne
+	@JoinColumn(name = "id")
+	@JsonIgnoreProperties({"id"})
+	private MotoristaModel motorista;
 
 	public PessoaModel() {
 
@@ -187,6 +193,14 @@ public class PessoaModel implements Serializable {
 	public String getCodigoAtivacao() { return codigoAtivacao; }
 
 	public void setCodigoAtivacao(String codigoAtivacao) { 	this.codigoAtivacao = codigoAtivacao; }
+
+	public MotoristaModel getMotorista() {
+		return motorista;
+	}
+
+	public void setMotorista(MotoristaModel motorista) {
+		this.motorista = motorista;
+	}
 
 	@Override
 	public boolean equals(Object obj) {
