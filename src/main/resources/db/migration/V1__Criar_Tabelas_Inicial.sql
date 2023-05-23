@@ -114,7 +114,6 @@ CREATE TABLE IF NOT EXISTS `solicitacao_recurso` (
 -- Copiando estrutura para tabela reserva_data.transporte
 CREATE TABLE IF NOT EXISTS `transporte` (
   `placa` varchar(255) DEFAULT NULL,
-  `descricao` varchar(255) DEFAULT NULL,
   `total_de_assentos` int DEFAULT NULL,
   `id` bigint NOT NULL,
   PRIMARY KEY (`id`),

@@ -18,11 +18,11 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import reserva_api.dtos.ReservaDto;
 import reserva_api.models.Equipamento;
-import reserva_api.models.Local;
+import reserva_api.models.LocalModel;
 import reserva_api.models.PessoaModel;
 import reserva_api.models.Recurso;
 import reserva_api.models.Solicitacao;
-import reserva_api.models.Transporte;
+import reserva_api.models.TransporteModel;
 import reserva_api.repositories.filters.RecursoFilter;
 
 public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuery {
@@ -64,7 +64,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		Join<Solicitacao, Recurso> recursoJoin = root.join("recursos");
 		Join<Solicitacao, PessoaModel> pessoaJoin = root.join("solicitante");
 
-		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, Local.class);
+		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, LocalModel.class);
 
 		criteria.orderBy(builder.asc(root.get("dataInicio")));
 		criteria.distinct(true);
@@ -79,7 +79,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 
 		adicionarRestricoesDePaginacao(query, pageable);
 
-		return new PageImpl<>(query.getResultList(), pageable, total(recursoFilter, Local.class));
+		return new PageImpl<>(query.getResultList(), pageable, total(recursoFilter, LocalModel.class));
 
 	}
 
@@ -116,7 +116,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		Join<Solicitacao, Recurso> recursoJoin = root.join("recursos");
 		Join<Solicitacao, PessoaModel> pessoaJoin = root.join("solicitante");
 
-		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, Transporte.class);
+		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, TransporteModel.class);
 		
 
 		criteria.orderBy(builder.asc(root.get("dataInicio")));
@@ -130,7 +130,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 
 		TypedQuery<ReservaDto> query = manager.createQuery(criteria);
 		adicionarRestricoesDePaginacao(query, pageable);
-		return new PageImpl<>(query.getResultList(), pageable, total(recursoFilter,Transporte.class));
+		return new PageImpl<>(query.getResultList(), pageable, total(recursoFilter, TransporteModel.class));
 
 	}
 

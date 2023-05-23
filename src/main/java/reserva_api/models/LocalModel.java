@@ -1,23 +1,28 @@
 package reserva_api.models;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
-public class Local extends Recurso {
+@Table(name = "local")
+public class LocalModel extends Recurso {
 	private static final long serialVersionUID = 1L;
 
+	@Column(nullable = false, length = 255)
 	private String identificacao;
+	@Column
 	private Integer totalDeAssento;
 
-	public Local() {
+	public LocalModel() {
 
 	}
 
-	public Local(Long id) {
+	public LocalModel(Long id) {
 		super(id);
 	}
 
-	public Local(Long id, String descricao, String identificacao, Integer totalDeAssento) {
+	public LocalModel(Long id, String descricao, String identificacao, Integer totalDeAssento) {
 		super(id, descricao);
 		this.identificacao = identificacao;
 		this.totalDeAssento = totalDeAssento;

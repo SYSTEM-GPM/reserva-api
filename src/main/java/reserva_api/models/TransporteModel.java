@@ -5,29 +5,34 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.Table;
 
 @Entity
-public class Transporte extends Recurso {
+@Table(name = "transporte")
+public class TransporteModel extends Recurso {
 	private static final long serialVersionUID = 1L;
-	@NotBlank(message = "Placa é obrigatório")
+
+	@Column(nullable = false, length = 255)
 	private String placa;
+
+	@Column
 	private Integer totalDeAssentos;
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "transporte")
 	private Set<Viagem> viagens = new HashSet<>();
 
-	public Transporte() {
+	public TransporteModel() {
 	}
 
-	public Transporte(Long id) {
+	public TransporteModel(Long id) {
 		super(id);
 	}
 
-	public Transporte(Long id, String descricao, String placa, Integer totalDeAssentos) {
+	public TransporteModel(Long id, String descricao, String placa, Integer totalDeAssentos) {
 		super(id, descricao);
 		this.placa = placa;
 		this.totalDeAssentos = totalDeAssentos;
