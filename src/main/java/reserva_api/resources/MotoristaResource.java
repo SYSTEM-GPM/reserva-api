@@ -1,22 +1,19 @@
 package reserva_api.resources;
 
-import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reserva_api.dtos.MotoristaDto;
-import reserva_api.dtos.PessoaDto;
 import reserva_api.models.MotoristaModel;
 import reserva_api.models.PessoaModel;
-import reserva_api.models.SetorModel;
-import reserva_api.models.TelefoneModel;
-import reserva_api.models.enums.TipoTelefone;
 import reserva_api.services.MotoristaService;
 import reserva_api.services.PessoaService;
-import reserva_api.utils.MensagemEmailUtil;
 
 import java.util.Optional;
 
@@ -29,6 +26,11 @@ public class MotoristaResource {
 
     @Autowired
     private MotoristaService motoristaService;
+
+    @GetMapping
+    public ResponseEntity<Page<MotoristaModel>> buscarTodos(Pageable pageable) {
+        return ResponseEntity.ok().body(motoristaService.buscarTodos(pageable));
+    }
 
     //cadastrando motorista
     @PostMapping
