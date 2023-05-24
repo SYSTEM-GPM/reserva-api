@@ -1,2 +1,6 @@
-package reserva_api.models.enums;public enum StatusEmail {
+package reserva_api.models.enums;
+
+public enum StatusEmail {
+    SENT,
+    ERROR;
 }
