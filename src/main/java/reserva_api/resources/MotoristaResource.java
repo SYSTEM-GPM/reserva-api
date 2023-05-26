@@ -14,6 +14,8 @@ import reserva_api.models.MotoristaModel;
 import reserva_api.models.PessoaModel;
 import reserva_api.services.MotoristaService;
 import reserva_api.services.PessoaService;
+import reserva_api.utils.ApiError;
+import reserva_api.utils.ApiSuccess;
 
 import java.util.Optional;
 
@@ -37,7 +39,9 @@ public class MotoristaResource {
     public ResponseEntity<Object> salvar(@RequestBody @Valid MotoristaDto motoristaDto) {
 
         if(motoristaService.existsByNumeroCnh(motoristaDto.getNumeroCnh())){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: CNH já está em uso!");
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(new ApiError( "CNH já está em uso!"));
         }
 
         var pessoaModel = new PessoaModel();
@@ -50,7 +54,9 @@ public class MotoristaResource {
         motoristaService.salvar(motoristaModel);
 
         //return ResponseEntity.status(HttpStatus.CREATED).body(pessoaModel.getNome() +"\n"+ motoristaModel.getNumeroCnh());
-        return ResponseEntity.status(HttpStatus.CREATED).body("Cadastro realizado com sucesso!");
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new ApiSuccess("Cadastro realizado com sucesso!"));
     }
 
     @PutMapping("/{id}")
@@ -60,7 +66,9 @@ public class MotoristaResource {
         //verifica se motorista existe
         Optional<MotoristaModel> motoristaModelOptional = motoristaService.findById(id);
         if(!motoristaModelOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Motorista não existe!");
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ApiError( "Motorista não existe!"));
         }
 
         //pega dados da pessoa
@@ -75,7 +83,9 @@ public class MotoristaResource {
         pessoaService.salvar(pessoaModel);
 
         //return ResponseEntity.status(HttpStatus.CREATED).body(pessoaModel.getNome() +"\n"+ motoristaModel.getNumeroCnh());
-        return ResponseEntity.status(HttpStatus.OK).body("Atualização realizada com sucesso!");
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ApiSuccess("Atualização realizada com sucesso!"));
     }
 
 }

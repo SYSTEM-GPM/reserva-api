@@ -25,30 +25,32 @@ import reserva_api.dtos.TransporteDto;
 import reserva_api.models.SetorModel;
 import reserva_api.models.TransporteModel;
 import reserva_api.services.SetorService;
+import reserva_api.utils.ApiError;
+import reserva_api.utils.ApiSuccess;
 
 @RestController
 @RequestMapping(value = "/setores")
 public class SetorResource {
-	
+
 	@Autowired
 	private SetorService setorService;
-	
+
 	@GetMapping
 	public ResponseEntity<Page<SetorModel>> buscarTodos(Pageable pageable) {
 		return ResponseEntity.ok().body(setorService.buscarTodos(pageable));
 	}
-	
+
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<SetorModel> buscarPorId(@PathVariable Long id) {
 		SetorModel setorModel = setorService.buscarPorId(id);
 		return ResponseEntity.ok().body(setorModel);
 	}
-	
+
 	@PostMapping
 	public ResponseEntity<Object> salvar(@RequestBody @Valid SetorDto setorDto) {
 
 		if(setorService.existsByNome(setorDto.getNome())){
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Setor já existe!");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiError( "Setor já existe!"));
 		}
 
 		var setorModel = new SetorModel();
@@ -56,7 +58,7 @@ public class SetorResource {
 		setorService.salvar(setorModel);
 
 		//return ResponseEntity.status(HttpStatus.CREATED).body(setorService.salvar(setorModel));
-		return ResponseEntity.status(HttpStatus.CREATED).body("Setor cadastrado com sucesso");
+		return ResponseEntity.status(HttpStatus.CREATED).body(new ApiSuccess("Setor cadastrado com sucesso"));
 	}
 
 	@PutMapping("/{id}")
@@ -66,9 +68,9 @@ public class SetorResource {
 		setorService.atualizar(id, setorDto);
 
 		//return ResponseEntity.ok(setorService.atualizar(id, setorDto));
-		return ResponseEntity.status(HttpStatus.OK).body("Atualização realizada com sucesso!");
+		return ResponseEntity.status(HttpStatus.OK).body(new ApiSuccess("Atualização realizada com sucesso!"));
 	}
-	
+
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> excluirPorId(@PathVariable Long id) {
 		setorService.excluirPorId(id);
