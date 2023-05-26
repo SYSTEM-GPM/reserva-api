@@ -1,6 +1,6 @@
 package reserva_api.utils;
 
-public class ApiSuccess extends ApiError {
+public class ApiSuccess extends ApiBaseReturn {
 
     private String message;
 
