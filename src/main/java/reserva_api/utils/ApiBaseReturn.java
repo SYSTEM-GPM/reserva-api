@@ -3,14 +3,13 @@ package reserva_api.utils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ApiBaseReturn {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private LocalDateTime timestamp;
     private String message;
-    private List<CustomError> errors;
+    private List<String> errors;
 
     public ApiBaseReturn() {
         this.timestamp = LocalDateTime.now();
@@ -32,11 +31,11 @@ public class ApiBaseReturn {
         this.message = message;
     }
 
-    public List<CustomError> getErrors() {
-        return errors;
+    public List<String> getErrors() {
+        return this.errors;
     }
 
-    public void setErrors(List<CustomError> errors) {
+    public void setErrors(List<String> errors) {
         this.errors = errors;
     }
 }
