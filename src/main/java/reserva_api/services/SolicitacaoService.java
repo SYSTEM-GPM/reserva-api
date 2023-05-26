@@ -12,9 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import reserva_api.dtos.ReservaDto;
-import reserva_api.models.PessoaModel;
-import reserva_api.models.Recurso;
-import reserva_api.models.Solicitacao;
+import reserva_api.models.*;
 import reserva_api.models.enums.StatusSolicitacao;
 import reserva_api.repositories.PessoaRepository;
 import reserva_api.repositories.RecursoRepository;
@@ -31,7 +29,7 @@ public class SolicitacaoService {
 
 	@Autowired
 	private PessoaRepository pessoaRepository;
-	
+
 	@Autowired
 	private RecursoRepository recursoRepository;
 
@@ -66,7 +64,7 @@ public class SolicitacaoService {
 
 	public Boolean IsLivre(RecursoFilter recursoFilter) {
 		Pageable pageable = PageRequest.of(0, 20);
-		if(ObjectUtils.isEmpty(recursoFilter.getIdRecurso()) || 
+		if(ObjectUtils.isEmpty(recursoFilter.getIdRecurso()) ||
 				ObjectUtils.isEmpty(recursoFilter.getDataInicio()) ||
 				ObjectUtils.isEmpty(recursoFilter.getDataFinal())) {
 			throw new AllPropertiesIsRequiredException();
@@ -75,12 +73,18 @@ public class SolicitacaoService {
 		return reservas.isEmpty();
 	}
 
-	public Solicitacao salvar(Solicitacao solicitacao) {
+	public Solicitacao salvar(Long idPessoa, Long idLocal, Solicitacao solicitacao) {
+
 		solicitacao.setDataSolicitacao(LocalDateTime.now());
-		solicitacao.setStatus(StatusSolicitacao.SOLICITADO);
-		pessoaRepository.findById(solicitacao.getSolicitante().getId()).orElseThrow();
-		RecursoFilter recursoFilter = new RecursoFilter(null, solicitacao.getDataInicio(), 
+		solicitacao.setStatus(StatusSolicitacao.RESERVADO);
+		solicitacao.setSolicitante(new PessoaModel(idPessoa));
+		pessoaRepository.findById(idPessoa).orElseThrow();
+
+		solicitacao.getRecursos().add(new LocalModel(idLocal));
+
+		RecursoFilter recursoFilter = new RecursoFilter(null, solicitacao.getDataInicio(),
 				solicitacao.getDataFinal(),solicitacao.getStatus());
+
 		for (Recurso r : solicitacao.getRecursos()) {
 			recursoRepository.findById(r.getId()).orElseThrow();
 			recursoFilter.setIdRecurso(r.getId());
@@ -88,6 +92,7 @@ public class SolicitacaoService {
 				throw new NonFreeResourceException(r.getId());
 			}
 		}
+
 		return solicitacaoRepository.save(solicitacao);
 	}
 
@@ -97,9 +102,9 @@ public class SolicitacaoService {
 
 	public Solicitacao atualizar(Long id, Solicitacao solicitacao) {
 		Solicitacao solicitacaoSalva = solicitacaoRepository.findById(id).orElseThrow();
-		
+
 		pessoaRepository.findById(solicitacao.getSolicitante().getId()).orElseThrow();
-		RecursoFilter recursoFilter = new RecursoFilter(null, solicitacao.getDataInicio(), 
+		RecursoFilter recursoFilter = new RecursoFilter(null, solicitacao.getDataInicio(),
 				solicitacao.getDataFinal(),solicitacao.getStatus());
 		for (Recurso r : solicitacao.getRecursos()) {
 			recursoRepository.findById(r.getId()).orElseThrow();

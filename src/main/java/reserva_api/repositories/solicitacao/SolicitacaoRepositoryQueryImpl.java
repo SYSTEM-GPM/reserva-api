@@ -45,7 +45,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 
 		criteria.select(builder.construct(ReservaDto.class, root.get("id"), recursoJoin.get("id"),
 				recursoJoin.get("descricao"), root.get("dataInicio"), root.get("dataFinal"), pessoaJoin.get("nome"),
-				pessoaJoin.get("telefone").get("numero"), root.get("status")));
+				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("status")));
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
 
@@ -53,7 +53,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 
 		adicionarRestricoesDePaginacao(query, pageable);
 
-		return new PageImpl<>(query.getResultList(), pageable, total(recursoFilter, null)); 
+		return new PageImpl<>(query.getResultList(), pageable, total(recursoFilter, null));
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 
 		criteria.select(builder.construct(ReservaDto.class, root.get("id"), recursoJoin.get("id"),
 				recursoJoin.get("descricao"), root.get("dataInicio"), root.get("dataFinal"), pessoaJoin.get("nome"),
-				pessoaJoin.get("telefone").get("numero"), root.get("status")));
+				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("status")));
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
 
@@ -92,14 +92,14 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		Join<Solicitacao, PessoaModel> pessoaJoin = root.join("solicitante");
 
 		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, Equipamento.class);
-		
+
 
 		criteria.orderBy(builder.asc(root.get("dataInicio")));
 		criteria.distinct(true);
 
 		criteria.select(builder.construct(ReservaDto.class, root.get("id"), recursoJoin.get("id"),
 				recursoJoin.get("descricao"), root.get("dataInicio"), root.get("dataFinal"), pessoaJoin.get("nome"),
-				pessoaJoin.get("telefone").get("numero"), root.get("status")));
+				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("status")));
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
 
@@ -117,14 +117,14 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		Join<Solicitacao, PessoaModel> pessoaJoin = root.join("solicitante");
 
 		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, TransporteModel.class);
-		
+
 
 		criteria.orderBy(builder.asc(root.get("dataInicio")));
 		criteria.distinct(true);
 
 		criteria.select(builder.construct(ReservaDto.class, root.get("id"), recursoJoin.get("id"),
 				recursoJoin.get("descricao"), root.get("dataInicio"), root.get("dataFinal"), pessoaJoin.get("nome"),
-				pessoaJoin.get("telefone").get("numero"), root.get("status")));
+				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("status")));
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
 
@@ -148,7 +148,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
 		Root<Solicitacao> root = criteria.from(Solicitacao.class);
 		Join<Solicitacao, Recurso> recursoJoin = root.join("recursos");
-		
+
 		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, c);
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
@@ -158,7 +158,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 	}
 
 	private List<Predicate> criarRestricoes(RecursoFilter recursoFilter, CriteriaBuilder builder,
-			Root<Solicitacao> root, Join<Solicitacao, Recurso> recursoJoin, Class c) {
+											Root<Solicitacao> root, Join<Solicitacao, Recurso> recursoJoin, Class c) {
 
 		List<Predicate> predicates = new ArrayList<>();
 
@@ -172,9 +172,9 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		if (!ObjectUtils.isEmpty(recursoFilter.getIdRecurso())) {
 			predicates.add(builder.equal(recursoJoin.get("id"), recursoFilter.getIdRecurso()));
 		}
-		
+
 		if (c!=null) {
-			predicates.add(builder.equal(recursoJoin.type(), c));			
+			predicates.add(builder.equal(recursoJoin.type(), c));
 		}
 
 		return predicates;

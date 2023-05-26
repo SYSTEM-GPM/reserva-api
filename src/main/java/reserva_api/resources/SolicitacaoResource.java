@@ -3,9 +3,11 @@ package reserva_api.resources;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
+import reserva_api.dtos.PessoaDto;
 import reserva_api.dtos.ReservaDto;
+import reserva_api.dtos.SolicitacaoLocalDto;
+import reserva_api.models.PessoaModel;
 import reserva_api.models.Solicitacao;
 import reserva_api.models.Viagem;
 import reserva_api.repositories.filters.RecursoFilter;
@@ -34,12 +39,12 @@ public class SolicitacaoResource {
 
 	@Autowired
 	private ViagemService viagemService;
-	
+
 	@GetMapping
 	public ResponseEntity<Page<Solicitacao>> buscarTodas(Pageable pageable) {
 		return ResponseEntity.ok().body(solicitacaoService.buscarTodas(pageable));
 	}
-	
+
 	@GetMapping("/estalivre")
 	public ResponseEntity<Boolean> isLivre(RecursoFilter recursoFilter) {
 		return ResponseEntity.ok().body(solicitacaoService.IsLivre(recursoFilter));
@@ -49,17 +54,17 @@ public class SolicitacaoResource {
 	public ResponseEntity<Page<ReservaDto>> buscarReservas(RecursoFilter recursoFilter, Pageable pageable) {
 		return ResponseEntity.ok().body(solicitacaoService.todasReservaPorData(recursoFilter, pageable));
 	}
-	
+
 	@GetMapping("/resumo/locais")
 	public ResponseEntity<Page<ReservaDto>> buscarReservasLocal(RecursoFilter recursoFilter, Pageable pageable) {
 		return ResponseEntity.ok().body(solicitacaoService.reservaLocalPorData(recursoFilter, pageable));
 	}
-	
+
 	@GetMapping("/resumo/equipamentos")
 	public ResponseEntity<Page<ReservaDto>> buscarReservasEquipamento(RecursoFilter recursoFilter, Pageable pageable) {
 		return ResponseEntity.ok().body(solicitacaoService.reservaEquipamentoPorData(recursoFilter, pageable));
 	}
-	
+
 	@GetMapping("/resumo/transportes")
 	public ResponseEntity<Page<ReservaDto>> buscarReservasTransporte(RecursoFilter recursoFilter, Pageable pageable) {
 		return ResponseEntity.ok().body(solicitacaoService.reservaTransportePorData(recursoFilter, pageable));
@@ -82,14 +87,22 @@ public class SolicitacaoResource {
 		return ResponseEntity.noContent().build();
 	}
 
+	//Cadastra Solicitação Geral
 	@PostMapping
-	public ResponseEntity<Solicitacao> salvar(@Valid @RequestBody Solicitacao solicitacao) {
-		Solicitacao solicitacaoSalva = solicitacaoService.salvar(solicitacao);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(solicitacaoSalva.getId()).toUri();
-		return ResponseEntity.created(uri).body(solicitacaoSalva);
+	public ResponseEntity<Object> salvar(@RequestBody @Valid SolicitacaoLocalDto solicitacaoLocalDto) {
+
+		var solicitacao = new Solicitacao();
+		BeanUtils.copyProperties(solicitacaoLocalDto, solicitacao);
+
+		Solicitacao solicitacaoSalva = solicitacaoService.salvar(solicitacaoLocalDto.getIdPessoa(), solicitacaoLocalDto.getIdLocal(), solicitacao);
+
+		//URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(solicitacaoSalva.getId()).toUri();
+		//return ResponseEntity.created(uri).body(solicitacaoSalva);
+
+		return ResponseEntity.status(HttpStatus.OK).body("Local reservado com sucesso!");
 	}
 
+	//Atualizar Solicitação Geral
 	@PutMapping("/{id}")
 	public ResponseEntity<Solicitacao> atualizar(@PathVariable Long id, @Valid @RequestBody Solicitacao solicitacao) {
 		Solicitacao solicitacaoSalva = solicitacaoService.atualizar(id, solicitacao);

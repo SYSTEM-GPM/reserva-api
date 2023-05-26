@@ -8,17 +8,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import reserva_api.models.enums.StatusSolicitacao;
@@ -26,36 +16,49 @@ import reserva_api.models.enums.StatusSolicitacao;
 @Entity
 @Table(name = "solicitacao")
 public class Solicitacao implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@NotNull(message = "Data inicio é obrigatório")
-	@FutureOrPresent(message = "Data início deve ser uma data futura") 
+
+	@Column(nullable = false)
 	private LocalDateTime dataInicio;
-	@NotNull(message = "Data final é obrigatório")
-	@FutureOrPresent(message = "Data final deve ser uma data futura")
+
+	@Column(nullable = false)
 	private LocalDateTime dataFinal;
+
+	@Column(nullable = false, length = 255)
 	private String justificativa;
+
+	@Column(nullable = false)
 	private LocalDateTime dataSolicitacao;
+
+	@Column
 	private LocalDateTime dataRetirada;
+
+	@Column
 	private LocalDateTime dataDevolucao;
 
+	@Column(nullable = true, length = 255)
+	private String externo;
+
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 255)
 	private StatusSolicitacao status;
-	
-	@NotNull(message = "Solicitante inicio é obrigatório")
+
+	@NotNull(message = "Solicitante é obrigatório")
 	@JsonIgnoreProperties({"setor","cpf","dataNascimento"})
 	@ManyToOne
 	@JoinColumn(name = "solicitante_id")
 	private PessoaModel solicitante;
-	
+
 	@NotNull(message = "Recurso é obrigatório")
 	@ManyToMany
-	@JoinTable(name = "solicitacao_recurso", 
-	joinColumns = @JoinColumn(name = "solicitacao_id"), 
-	inverseJoinColumns = @JoinColumn(name = "recurso_id"))
+	@JoinTable(name = "solicitacao_recurso",
+			joinColumns = @JoinColumn(name = "solicitacao_id"),
+			inverseJoinColumns = @JoinColumn(name = "recurso_id"))
 	private Set<Recurso> recursos = new HashSet<>();
 
 	public Solicitacao() {
@@ -68,8 +71,8 @@ public class Solicitacao implements Serializable {
 	}
 
 	public Solicitacao(Long id, LocalDateTime dataInicio, LocalDateTime dataFinal, String justificativa,
-			LocalDateTime dataSolicitacao, LocalDateTime dataRetirada, LocalDateTime dataDevolucao,
-			StatusSolicitacao status, PessoaModel solicitante) {
+					   LocalDateTime dataSolicitacao, LocalDateTime dataRetirada, LocalDateTime dataDevolucao,
+					   StatusSolicitacao status, PessoaModel solicitante) {
 		super();
 		this.id = id;
 		this.dataInicio = dataInicio;
@@ -136,6 +139,14 @@ public class Solicitacao implements Serializable {
 
 	public void setDataDevolucao(LocalDateTime dataDevolucao) {
 		this.dataDevolucao = dataDevolucao;
+	}
+
+	public String getExterno() {
+		return externo;
+	}
+
+	public void setExterno(String externo) {
+		this.externo = externo;
 	}
 
 	public StatusSolicitacao getStatus() {

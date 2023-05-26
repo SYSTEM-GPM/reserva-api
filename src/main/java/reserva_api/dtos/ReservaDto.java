@@ -12,13 +12,14 @@ public class ReservaDto {
 	private LocalDateTime dataFinal;
 	private String solicitante;
 	private String telefone;
+	private String externo;
 	private String status;
 
 	public ReservaDto() {
 	}
 
 	public ReservaDto(Long idSolicitacao, Long idRecurso, String descricaoRecurso, LocalDateTime dataInicio,
-			LocalDateTime dataFinal, String solicitante, String telefone, StatusSolicitacao status) {
+					  LocalDateTime dataFinal, String solicitante, String telefone, String externo, StatusSolicitacao status) {
 		super();
 		this.idSolicitacao = idSolicitacao;
 		this.idRecurso = idRecurso;
@@ -27,6 +28,7 @@ public class ReservaDto {
 		this.dataFinal = dataFinal;
 		this.solicitante = solicitante;
 		this.telefone = telefone;
+		this.externo = externo;
 		this.status = status.toString();
 	}
 
@@ -90,6 +92,14 @@ public class ReservaDto {
 		this.telefone = telefone;
 	}
 
+	public String getExterno() {
+		return externo;
+	}
+
+	public void setExterno(String externo) {
+		this.externo = externo;
+	}
+
 	public String getStatus() {
 		return status;
 	}
@@ -97,7 +107,7 @@ public class ReservaDto {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
-	
+
+
 
 }
