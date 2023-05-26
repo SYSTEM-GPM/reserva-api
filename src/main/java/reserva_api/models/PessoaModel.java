@@ -6,10 +6,12 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import reserva_api.models.enums.StatusConta;
 import reserva_api.models.enums.TipoPerfil;
 
 @Entity
@@ -53,9 +55,21 @@ public class PessoaModel implements Serializable {
 	@Column(nullable = false, length = 255)
 	private String senha;
 
+	@Column(nullable = false, length = 255)
+	private String codigoAtivacao;
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 255)
+	private StatusConta status;
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "solicitante")
 	private Set<Solicitacao> solicitacoes = new HashSet<>();
+
+	@OneToOne
+	@JoinColumn(name = "id")
+	@JsonIgnoreProperties({"id"})
+	private MotoristaModel motorista;
 
 	public PessoaModel() {
 
@@ -66,7 +80,7 @@ public class PessoaModel implements Serializable {
 	}
 
 	public PessoaModel(Long id, String nome, String cpf, String siape, LocalDate dataNascimento, SetorModel setor,
-					   TipoPerfil tipoPerfil, TelefoneModel telefone) {
+					   TipoPerfil tipoPerfil, TelefoneModel telefone, StatusConta status) {
 		super();
 		this.id = id;
 		this.nome = nome;
@@ -76,6 +90,7 @@ public class PessoaModel implements Serializable {
 		this.setor = setor;
 		this.tipoPerfil = tipoPerfil;
 		this.telefone = telefone;
+		this.status = status;
 	}
 
 	public Long getId() {
@@ -169,6 +184,22 @@ public class PessoaModel implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
+	}
+
+	public StatusConta getStatus() { return status;	}
+
+	public void setStatus(StatusConta status) {	this.status = status; }
+
+	public String getCodigoAtivacao() { return codigoAtivacao; }
+
+	public void setCodigoAtivacao(String codigoAtivacao) { 	this.codigoAtivacao = codigoAtivacao; }
+
+	public MotoristaModel getMotorista() {
+		return motorista;
+	}
+
+	public void setMotorista(MotoristaModel motorista) {
+		this.motorista = motorista;
 	}
 
 	@Override

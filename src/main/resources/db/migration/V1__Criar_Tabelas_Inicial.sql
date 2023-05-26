@@ -43,6 +43,8 @@ CREATE TABLE IF NOT EXISTS `pessoa` (
   `setor_id` bigint DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `senha` varchar(255) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `codigo_ativacao` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKc2uiam562pt4rl1dnt0lmkrw5` (`setor_id`),
   CONSTRAINT `FKc2uiam562pt4rl1dnt0lmkrw5` FOREIGN KEY (`setor_id`) REFERENCES `setor` (`id`)

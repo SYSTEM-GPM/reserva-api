@@ -23,6 +23,8 @@ import reserva_api.dtos.LocalDto;
 import reserva_api.dtos.TransporteDto;
 import reserva_api.models.*;
 import reserva_api.services.RecursoService;
+import reserva_api.utils.ApiError;
+import reserva_api.utils.ApiSuccess;
 
 @RestController
 @RequestMapping(value = "/recursos")
@@ -59,7 +61,7 @@ public class RecursoResource {
 	public ResponseEntity<Object> salvar(@RequestBody @Valid TransporteDto transporteDto) {
 
 		if(recursoService.existsByDescricao(transporteDto.getDescricao())){
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Transporte já existe!");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiError( "Transporte já existe!"));
 		}
 
 		var transporteModel = new TransporteModel();
@@ -69,7 +71,7 @@ public class RecursoResource {
 		//Recurso recursoSalvo = recursoService.salvar(transporteModel);
 		//return ResponseEntity.status(HttpStatus.CREATED).body(recursoSalvo);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body("Transporte cadastrado com sucesso");
+		return ResponseEntity.status(HttpStatus.CREATED).body(new ApiSuccess("Transporte cadastrado com sucesso"));
 	}
 
 	//Atualizar transportes
@@ -81,7 +83,7 @@ public class RecursoResource {
 		//return ResponseEntity.ok(recursoSalvo);
 
 		recursoService.atualizar(id, transporteDto);
-		return ResponseEntity.status(HttpStatus.OK).body("Atualização realizada com sucesso!");
+		return ResponseEntity.status(HttpStatus.OK).body(new ApiSuccess("Atualização realizada com sucesso!"));
 	}
 
 	//Buscar todos os locais
@@ -95,7 +97,7 @@ public class RecursoResource {
 	public ResponseEntity<Object> salvar(@RequestBody @Valid LocalDto localDto) {
 
 		if(recursoService.existsByDescricao(localDto.getDescricao())){
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Local já existe!");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiError( "Local já existe!"));
 		}
 
 		var localModel = new LocalModel();
@@ -105,7 +107,7 @@ public class RecursoResource {
 		//Recurso recursoSalvo = recursoService.salvar(localModel);
 		//return ResponseEntity.status(HttpStatus.CREATED).body(recursoSalvo);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body("Local cadastrado com sucesso");
+		return ResponseEntity.status(HttpStatus.CREATED).body(new ApiSuccess("Local cadastrado com sucesso"));
 	}
 
 	//Atualizar Local
@@ -117,7 +119,7 @@ public class RecursoResource {
 		//return ResponseEntity.ok(recursoSalvo);
 
 		recursoService.atualizar(id, localDto);
-		return ResponseEntity.status(HttpStatus.OK).body("Atualização realizada com sucesso!");
+		return ResponseEntity.status(HttpStatus.OK).body(new ApiSuccess("Atualização realizada com sucesso!"));
 	}
 
 	/*
