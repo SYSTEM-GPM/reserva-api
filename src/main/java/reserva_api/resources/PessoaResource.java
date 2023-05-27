@@ -254,6 +254,10 @@ public class PessoaResource {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(erros);
 		}
 
+		pessoaDto.setCpf(pessoaDto.getCpf().replaceAll("[^0-9]", ""));
+		pessoaDto.setTelefone(pessoaDto.getTelefone().replaceAll("[^0-9]", ""));
+		pessoaDto.setSiape(pessoaDto.getSiape().replaceAll("[^0-9]", ""));
+
 		//validar setor e data com valores null
 
 		//---
@@ -296,7 +300,7 @@ public class PessoaResource {
 		//status é uma resposta
 		//body informa retorno do metodo save com os dados ja salvos no banco
 		//return ResponseEntity.status(HttpStatus.CREATED).body(pessoaModel);
-		return ResponseEntity.status(HttpStatus.CREATED).body("Cadastro realizado com sucesso!");
+		return ResponseEntity.status(HttpStatus.CREATED).body(new ApiSuccess("Cadastro realizado com sucesso!"));
 	}
 
 	//atualizando pessoas
@@ -316,6 +320,10 @@ public class PessoaResource {
 
 		//Identifica os dados que vao sofrer alterações
         var pessoaModel = pessoaModelOptional.get();
+
+		pessoaDto.setCpf(pessoaDto.getCpf().replaceAll("[^0-9]", ""));
+		pessoaDto.setTelefone(pessoaDto.getTelefone().replaceAll("[^0-9]", ""));
+		pessoaDto.setSiape(pessoaDto.getSiape().replaceAll("[^0-9]", ""));
 
 		pessoaModel.setNome(pessoaDto.getNome());
 		pessoaModel.setCpf(pessoaDto.getCpf());
