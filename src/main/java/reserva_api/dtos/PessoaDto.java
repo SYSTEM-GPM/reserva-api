@@ -17,7 +17,7 @@ public class PessoaDto {
 	private String nome;
 
 	@NotBlank(message = "O campo CPF é obrigatório")
-	@Size(min = 14, max = 14) //14 com mascara e 11 sem mascara
+	@Size(min = 11, max = 14) //14 com mascara e 11 sem mascara
 	@CPF(message = "CPF inválido")
 	private String cpf;
 
@@ -34,7 +34,7 @@ public class PessoaDto {
 	private TipoPerfil tipoPerfil;
 
 	@NotBlank(message = "O campo Telefone é obrigatório")
-	@Size(min = 15, max = 15) //15 com mascara e 11 sem mascara
+	@Size(min = 11, max = 15) //15 com mascara e 11 sem mascara
 	private String telefone;
 
 	@NotNull(message = "O campo Setor é obrigatório")
@@ -118,16 +118,6 @@ public class PessoaDto {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-/*
-	public String getSenha() {
-		return senha;
-	}
-
-	public void setSenha(String senha) {
-		this.senha = senha;
-	}
- */
 
 	public String getNumeroCnh() {
 		return numeroCnh;
