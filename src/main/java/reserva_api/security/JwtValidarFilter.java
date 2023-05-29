@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,9 +20,12 @@ public class JwtValidarFilter extends BasicAuthenticationFilter {
     public static final String HEADER_ATRIBUTO = "Authorization";
     public static final String ATRIBUTO_PREFIXO = "Bearer ";
 
+    private final HandlerExceptionResolver handlerExceptionResolver;
 
-    public JwtValidarFilter(AuthenticationManager authenticationManager) {
+
+    public JwtValidarFilter(AuthenticationManager authenticationManager, HandlerExceptionResolver handlerExceptionResolver) {
         super(authenticationManager);
+        this.handlerExceptionResolver = handlerExceptionResolver;
     }
 
     @Override
@@ -40,11 +44,15 @@ public class JwtValidarFilter extends BasicAuthenticationFilter {
             return;
         }
 
-        String token = atributo.replace(ATRIBUTO_PREFIXO, "");
-        UsernamePasswordAuthenticationToken authenticationToken = getAuthorizationToken(token);
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        try {
+            String token = atributo.replace(ATRIBUTO_PREFIXO, "");
+            UsernamePasswordAuthenticationToken authenticationToken = getAuthorizationToken(token);
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-        chain.doFilter(request, response);
+            chain.doFilter(request, response);
+        } catch (RuntimeException e) {
+            handlerExceptionResolver.resolveException(request, response, null, e);
+        }
     }
 
     private UsernamePasswordAuthenticationToken getAuthorizationToken(String token) {

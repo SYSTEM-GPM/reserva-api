@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import reserva_api.services.DetalheUsuarioService;
 
 
@@ -21,6 +22,10 @@ public class WebSecurityConfiguracao {
 
     @Autowired
     DetalheUsuarioService detalheUsuarioService;
+
+
+    @Autowired
+    HandlerExceptionResolver handlerExceptionResolver;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -42,7 +47,7 @@ public class WebSecurityConfiguracao {
                 .requestMatchers(HttpMethod.PUT, "/pessoas/{id}/senha").permitAll()
                 .anyRequest().authenticated().and()
                 .authenticationManager(authenticationManager)
-                .addFilterBefore(new JwtValidarFilter(authenticationManager), JwtAutentificarFilter.class);
+                .addFilterBefore(new JwtValidarFilter(authenticationManager, handlerExceptionResolver), JwtAutentificarFilter.class);
 
         return http.build();
     }

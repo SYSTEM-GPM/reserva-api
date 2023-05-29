@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,27 +40,6 @@ public class LoginResource {
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody LoginDto login) {
-         var pessoa = this.pessoaService.buscarPorEmail(login.getEmail());
-
-        if (pessoa.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiError("Usuário ou senha inválidos"));
-        }
-
-        var pessoaModel = pessoa.get();
-
-        if(pessoaModel.getStatus() != StatusConta.ATIVADA) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiError("Conta de usuário não ativada!"));
-        }
-
-        Boolean valid = encoder.matches(login.getSenha(), pessoaModel.getSenha());
-        if(!valid) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiError("E-mail ou senha inválidos!"));
-        }
-
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                 login.getEmail(),
                 login.getSenha()
@@ -74,7 +54,8 @@ public class LoginResource {
                 .withExpiresAt(new Date(System.currentTimeMillis() + JwtAutentificarFilter.TOKEN_EXPIRACAO))
                 .sign(Algorithm.HMAC512(JwtAutentificarFilter.TOKEN_SENHA));
 
-        return ResponseEntity.ok().body(new LoginResposta(pessoaModel, token));
+        return ResponseEntity.ok()
+                .body(new LoginResposta(usuario.getPessoa().orElse(new PessoaModel()), token));
     }
 
 
