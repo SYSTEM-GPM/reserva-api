@@ -12,6 +12,7 @@ import reserva_api.repositories.EmailRespository;
 import reserva_api.repositories.PessoaRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,26 +26,37 @@ public class EmailService {
     @Autowired
     private EmailRespository emailRespository;
 
-    public void enviarEmail(Long pessoaId, String assunto, String menssagem) {
-        Optional<PessoaModel> pessoaModelOptional = pessoaRepository.findById(pessoaId);
+    public EmailModel enviarEmail(EmailModel emailModel) {
+        Optional<PessoaModel> pessoaModelOptional = pessoaRepository.findById(emailModel.getPessoa().getId());
         if(pessoaModelOptional.isPresent()) {
             PessoaModel pessoaModel = pessoaModelOptional.get();
+            try {
+                emailModel.setPessoa(pessoaModel);
+                emailModel.setAssunto(emailModel.getAssunto());
+                emailModel.setMensagem(emailModel.getMensagem());
+                emailModel.setDataEmail(LocalDateTime.now());
 
-            EmailModel emailModel = new EmailModel();
-            emailModel.setPessoa(pessoaModel);
-            emailModel.setAssunto(assunto);
-            emailModel.setMensagem(menssagem);
-            emailModel.setDataEmail(LocalDateTime.now());
+                SimpleMailMessage mailMessage = new SimpleMailMessage();
+                mailMessage.setFrom("iano.dev.smtp@gmail.com"); // trocar para -> emailModel.getPessoa().getNome()
+                mailMessage.setTo("ianomaciel6385@gmail.com"); // trocar para o email da ADM :)
+                mailMessage.setSubject(emailModel.getAssunto());
+                mailMessage.setText(emailModel.getMensagem());
 
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setFrom("iano.dev.smtp@gmail.com");
-            mailMessage.setTo("ianomaciel6385@gmail.com");
-            mailMessage.setSubject(assunto);
-            mailMessage.setText(menssagem);
 
-            javaMailSender.send(mailMessage);
+                javaMailSender.send(mailMessage);
+
+                emailModel.setStatusEmail(StatusEmail.SENT);
+            } catch (MailException e) {
+                emailModel.setStatusEmail(StatusEmail.ERROR);
+            } finally {
+                return emailRespository.save(emailModel);
+            }
         } else {
             throw new IllegalArgumentException("Pessoa não encontrada");
         }
+    }
+
+    public List<EmailModel> listarTodosEmails() {
+        return emailRespository.findAll();
     }
 }
