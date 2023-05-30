@@ -21,7 +21,7 @@ import java.util.Date;
 
 public class JwtAutentificarFilter extends UsernamePasswordAuthenticationFilter {
 
-    public static final int TOKEN_EXPIRACAO = 600_000;
+    public static final int TOKEN_EXPIRACAO = 86400000; // 1 dia
     public static final String TOKEN_SENHA = "a0de9067-a9af-486e-a05f-6bca4032888d";
 
     private final AuthenticationManager authenticationManager;
