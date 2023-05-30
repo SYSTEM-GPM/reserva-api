@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -39,9 +40,8 @@ public class PessoaResource {
 	@Autowired
 	private EnviaEmailService enviaEmailService;
 
-	private BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+	@Autowired
+	private PasswordEncoder encoder;
 
 	private String geraNumeroAleatorio() {
 		Random rnd = new Random();
@@ -191,26 +191,13 @@ public class PessoaResource {
 					.body(new ApiError( "Código de ativação inválido!"));
 		}
 
-		pessoaModel.setSenha(passwordEncoder().encode(criarSenhaDto.getSenha()));
+		pessoaModel.setSenha(encoder.encode(criarSenhaDto.getSenha()));
 		pessoaModel.setStatus(StatusConta.ATIVADA);
 		pessoaModel.setCodigoAtivacao(null);
 
 		pessoaService.salvar(pessoaModel);
 
 		return ResponseEntity.status(HttpStatus.OK).body(new ApiSuccess("Senha salva com sucesso!"));
-	}
-
-	@PostMapping("/login")
-	public ResponseEntity<Object> login(@RequestBody @Valid LoginDto loginDto) {
-		var pessoa = pessoaService.buscarPorEmail(loginDto.getEmail());
-
-		if(pessoa.isEmpty()) {
-			return ResponseEntity
-					.status(HttpStatus.NOT_FOUND)
-					.body(new ApiError( "E-mail não encontrado!"));
-		}
-
-		return ResponseEntity.ok().body(pessoa);
 	}
 
 	@GetMapping(value = "/{id}")

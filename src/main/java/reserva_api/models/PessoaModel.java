@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -53,6 +54,7 @@ public class PessoaModel implements Serializable {
 	private String email;
 
 	@Column(nullable = false, length = 255)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String senha;
 
 	@Column(nullable = false, length = 255)
