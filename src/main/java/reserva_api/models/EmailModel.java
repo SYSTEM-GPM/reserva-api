@@ -16,14 +16,15 @@ public class EmailModel implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String ownerRef;
-    private String emailFrom;
-    private String emailTo;
-    private String subject;
+    private String assunto;
     @Column(columnDefinition = "TEXT")
-    protected String text;
-    private LocalDateTime sendDateEmail;
+    protected String mensagem;
+    private LocalDateTime dataEmail;
     private StatusEmail statusEmail;
+
+    @ManyToOne
+    @JoinColumn(name = "pessoa_id")
+    private PessoaModel pessoa;
 
     public Long getId() {
         return id;
@@ -33,52 +34,28 @@ public class EmailModel implements Serializable {
         this.id = id;
     }
 
-    public String getOwnerRef() {
-        return ownerRef;
+    public String getAssunto() {
+        return assunto;
     }
 
-    public void setOwnerRef(String ownerRef) {
-        this.ownerRef = ownerRef;
+    public void setAssunto(String assunto) {
+        this.assunto = assunto;
     }
 
-    public String getEmailFrom() {
-        return emailFrom;
+    public String getMensagem() {
+        return mensagem;
     }
 
-    public void setEmailFrom(String emailFrom) {
-        this.emailFrom = emailFrom;
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 
-    public String getEmailTo() {
-        return emailTo;
+    public LocalDateTime getDataEmail() {
+        return dataEmail;
     }
 
-    public void setEmailTo(String emailTo) {
-        this.emailTo = emailTo;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public LocalDateTime getSendDateEmail() {
-        return sendDateEmail;
-    }
-
-    public void setSendDateEmail(LocalDateTime sendDateEmail) {
-        this.sendDateEmail = sendDateEmail;
+    public void setDataEmail(LocalDateTime dataEmail) {
+        this.dataEmail = dataEmail;
     }
 
     public StatusEmail getStatusEmail() {
@@ -87,5 +64,13 @@ public class EmailModel implements Serializable {
 
     public void setStatusEmail(StatusEmail statusEmail) {
         this.statusEmail = statusEmail;
+    }
+
+    public PessoaModel getPessoa() {
+        return pessoa;
+    }
+
+    public void setPessoa(PessoaModel pessoa) {
+        this.pessoa = pessoa;
     }
 }

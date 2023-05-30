@@ -3,63 +3,38 @@ package reserva_api.dtos;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import reserva_api.models.PessoaModel;
 
 @Data
 public class EmailDto {
     @NotBlank
-    private String ownerRef;
-
+    private PessoaModel pessoa;
     @NotBlank
-    @Email
-    private String emailFrom;
-
+    private String assunto;
     @NotBlank
-    @Email
-    private String emailTo;
+    private String mensagem;
 
-    @NotBlank
-    private String subject;
-
-    @NotBlank
-    private String text;
-
-    public String getOwnerRef() {
-        return ownerRef;
+    public PessoaModel getPessoa() {
+        return pessoa;
     }
 
-    public void setOwnerRef(String ownerRef) {
-        this.ownerRef = ownerRef;
+    public void setPessoa(PessoaModel pessoa) {
+        this.pessoa = pessoa;
     }
 
-    public String getEmailFrom() {
-        return emailFrom;
+    public String getAssunto() {
+        return assunto;
     }
 
-    public void setEmailFrom(String emailFrom) {
-        this.emailFrom = emailFrom;
+    public void setAssunto(String assunto) {
+        this.assunto = assunto;
     }
 
-    public String getEmailTo() {
-        return emailTo;
+    public String getMensagem() {
+        return mensagem;
     }
 
-    public void setEmailTo(String emailTo) {
-        this.emailTo = emailTo;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 }
