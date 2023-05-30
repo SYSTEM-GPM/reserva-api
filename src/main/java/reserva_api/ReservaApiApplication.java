@@ -68,10 +68,9 @@ public class ReservaApiApplication implements CommandLineRunner {
 		PessoaModel p1 = pessoaRepository.findById(2L).orElseThrow();
 		PessoaModel p2 = pessoaRepository.findById(4L).orElseThrow();
 
-		Viagem vg1 = new Viagem(null, "Itacoatiara/Manaus/Itacoatiara", "B1547899", "/arquivos/xdrweweww2.pdf", 120879L,
-				null, m1, sol1, tr1);
-		vg1.getPassageiros().add(p1);
-		vg1.getPassageiros().add(p2);
+		Viagem vg1 = new Viagem(null, "Itacoatiara/Manaus/Itacoatiara", "B1547899", m1, sol1, tr1);
+		//vg1.getPassageiros().add(p1);
+		//vg1.getPassageiros().add(p2);
 
 		viagemRepository.save(vg1);
 

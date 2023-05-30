@@ -20,7 +20,7 @@ public class SolicitacaoLocalDto {
     private LocalDateTime dataFinal;
 
     @NotBlank(message = "O campo Descrição de Atividade é obrigatório")
-    private String justificativa; // Descrição da Atividade
+    private String finalidade; // Descrição da Atividade
 
     @NotNull(message = "O campo Local é obrigatório")
     private Long idLocal; // Cadastra o id do Local mas da para mudar para pegar nome ou os 2
@@ -51,12 +51,12 @@ public class SolicitacaoLocalDto {
         this.dataFinal = dataFinal;
     }
 
-    public String getJustificativa() {
-        return justificativa;
+    public String getFinalidade() {
+        return finalidade;
     }
 
-    public void setJustificativa(String justificativa) {
-        this.justificativa = justificativa;
+    public void setFinalidade(String finalidade) {
+        this.finalidade = finalidade;
     }
 
     public Long getIdLocal() {

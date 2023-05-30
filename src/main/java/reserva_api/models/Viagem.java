@@ -1,22 +1,11 @@
 package reserva_api.models;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
@@ -27,12 +16,12 @@ public class Viagem implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@NotBlank(message = "Destino é obrigatório")
+
+	@Column(nullable = false, length = 255)
 	private String destino;
-	private String numeroApoliceSeguro;
-	private String uriApoliceSeguro;
-	private Long quilometragemSaida;
-	private Long quilometragemChegada;
+
+	@Column(nullable = false, length = 255)
+	private String saida;
 
 	@JsonIgnoreProperties({ "setor", "dataNascimento", "cpf", "siape" })
 	@ManyToOne
@@ -48,13 +37,12 @@ public class Viagem implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "transporte_id")
 	private TransporteModel transporte;
-	
-	@JsonIgnoreProperties({"siape","setor","numeroCnh"})
-	@ManyToMany
-	@JoinTable(name = "passageiro", 
-	joinColumns = @JoinColumn(name = "viagem_id"), 
-	inverseJoinColumns = @JoinColumn(name = "pessoa_id"))
-	private Set<PessoaModel> passageiros = new HashSet<>();
+
+
+	//Mudar aqui
+	@JsonIgnoreProperties("viagem")
+	@OneToMany(mappedBy = "viagem", cascade = CascadeType.ALL)
+	private Set<PassageirosModel> passageiros = new HashSet<>();
 
 	public Viagem() {
 
@@ -65,15 +53,11 @@ public class Viagem implements Serializable {
 		this.id = id;
 	}
 
-	public Viagem(Long id, String destino, String numeroApoliceSeguro, String uriApoliceSeguro, Long quilometragemSaida,
-				  Long quilometragemChegada, MotoristaModel motorista, Solicitacao solicitacao, TransporteModel transporte) {
+	public Viagem(Long id, String saida, String destino, MotoristaModel motorista, Solicitacao solicitacao, TransporteModel transporte) {
 		super();
 		this.id = id;
+		this.saida = saida;
 		this.destino = destino;
-		this.numeroApoliceSeguro = numeroApoliceSeguro;
-		this.uriApoliceSeguro = uriApoliceSeguro;
-		this.quilometragemSaida = quilometragemSaida;
-		this.quilometragemChegada = quilometragemChegada;
 		this.motorista = motorista;
 		this.solicitacao = solicitacao;
 		this.transporte = transporte;
@@ -87,28 +71,20 @@ public class Viagem implements Serializable {
 		this.id = id;
 	}
 
+	public String getSaida() {
+		return saida;
+	}
+
+	public void setSaida(String saida) {
+		this.saida = saida;
+	}
+
 	public String getDestino() {
 		return destino;
 	}
 
 	public void setDestino(String destino) {
 		this.destino = destino;
-	}
-
-	public String getNumeroApoliceSeguro() {
-		return numeroApoliceSeguro;
-	}
-
-	public void setNumeroApoliceSeguro(String numeroApoliceSeguro) {
-		this.numeroApoliceSeguro = numeroApoliceSeguro;
-	}
-
-	public String getUriApoliceSeguro() {
-		return uriApoliceSeguro;
-	}
-
-	public void setUriApoliceSeguro(String uriApoliceSeguro) {
-		this.uriApoliceSeguro = uriApoliceSeguro;
 	}
 
 	public Solicitacao getSolicitacao() {
@@ -135,27 +111,11 @@ public class Viagem implements Serializable {
 		this.transporte = transporte;
 	}
 
-	public Long getQuilometragemSaida() {
-		return quilometragemSaida;
-	}
-
-	public void setQuilometragemSaida(Long quilometragemSaida) {
-		this.quilometragemSaida = quilometragemSaida;
-	}
-
-	public Long getQuilometragemChegada() {
-		return quilometragemChegada;
-	}
-
-	public void setQuilometragemChegada(Long quilometragemChegada) {
-		this.quilometragemChegada = quilometragemChegada;
-	}
-
-	public Set<PessoaModel> getPassageiros() {
+	public Set<PassageirosModel> getPassageiros() {
 		return passageiros;
 	}
 
-	public void setPassageiros(Set<PessoaModel> passageiros) {
+	public void setPassageiros(Set<PassageirosModel> passageiros) {
 		this.passageiros = passageiros;
 	}
 
@@ -178,8 +138,7 @@ public class Viagem implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Viagem [id=" + id + ", destino=" + destino + ", uriApoliceSeguro=" + uriApoliceSeguro
-				+ ", quilometragemSaida=" + quilometragemSaida + ", quilometragemChegada=" + quilometragemChegada
+		return "Viagem [id=" + id + ", saida=" + saida + ", destino=" + destino
 				+ ", motorista=" + motorista + ", solicitacao=" + solicitacao + ", transporte=" + transporte
 				+ ", passageiros=" + passageiros + "]";
 	}

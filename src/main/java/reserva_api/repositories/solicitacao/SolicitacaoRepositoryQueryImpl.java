@@ -45,7 +45,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 
 		criteria.select(builder.construct(ReservaDto.class, root.get("id"), recursoJoin.get("id"),
 				recursoJoin.get("descricao"), root.get("dataInicio"), root.get("dataFinal"), pessoaJoin.get("nome"),
-				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("status")));
+				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("autorizacao")));
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
 
@@ -71,7 +71,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 
 		criteria.select(builder.construct(ReservaDto.class, root.get("id"), recursoJoin.get("id"),
 				recursoJoin.get("descricao"), root.get("dataInicio"), root.get("dataFinal"), pessoaJoin.get("nome"),
-				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("status")));
+				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("autorizacao")));
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
 
@@ -99,7 +99,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 
 		criteria.select(builder.construct(ReservaDto.class, root.get("id"), recursoJoin.get("id"),
 				recursoJoin.get("descricao"), root.get("dataInicio"), root.get("dataFinal"), pessoaJoin.get("nome"),
-				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("status")));
+				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("autorizacao")));
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
 
@@ -124,7 +124,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 
 		criteria.select(builder.construct(ReservaDto.class, root.get("id"), recursoJoin.get("id"),
 				recursoJoin.get("descricao"), root.get("dataInicio"), root.get("dataFinal"), pessoaJoin.get("nome"),
-				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("status")));
+				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("autorizacao")));
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
 
@@ -166,8 +166,8 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 			predicates.add(builder.greaterThan(root.get("dataFinal"), recursoFilter.getDataInicio()));
 			predicates.add(builder.lessThan(root.get("dataInicio"), recursoFilter.getDataFinal()));
 		}
-		if (!ObjectUtils.isEmpty(recursoFilter.getStatus())) {
-			predicates.add(builder.equal(root.get("status"), recursoFilter.getStatus()));
+		if (!ObjectUtils.isEmpty(recursoFilter.getAutorizacao())) {
+			predicates.add(builder.equal(root.get("autorizacao"), recursoFilter.getAutorizacao()));
 		}
 		if (!ObjectUtils.isEmpty(recursoFilter.getIdRecurso())) {
 			predicates.add(builder.equal(recursoJoin.get("id"), recursoFilter.getIdRecurso()));

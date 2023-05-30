@@ -2,6 +2,7 @@ package reserva_api.resources;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
-import reserva_api.dtos.PessoaDto;
-import reserva_api.dtos.ReservaDto;
-import reserva_api.dtos.SolicitacaoLocalDto;
-import reserva_api.models.PessoaModel;
-import reserva_api.models.Solicitacao;
-import reserva_api.models.Viagem;
+import reserva_api.dtos.*;
+import reserva_api.models.*;
 import reserva_api.repositories.filters.RecursoFilter;
 import reserva_api.services.SolicitacaoService;
 import reserva_api.services.ViagemService;
+import reserva_api.utils.ApiError;
 
 @RestController
 @RequestMapping(value = "/solicitacoes")
@@ -60,11 +58,6 @@ public class SolicitacaoResource {
 		return ResponseEntity.ok().body(solicitacaoService.reservaLocalPorData(recursoFilter, pageable));
 	}
 
-	@GetMapping("/resumo/equipamentos")
-	public ResponseEntity<Page<ReservaDto>> buscarReservasEquipamento(RecursoFilter recursoFilter, Pageable pageable) {
-		return ResponseEntity.ok().body(solicitacaoService.reservaEquipamentoPorData(recursoFilter, pageable));
-	}
-
 	@GetMapping("/resumo/transportes")
 	public ResponseEntity<Page<ReservaDto>> buscarReservasTransporte(RecursoFilter recursoFilter, Pageable pageable) {
 		return ResponseEntity.ok().body(solicitacaoService.reservaTransportePorData(recursoFilter, pageable));
@@ -87,9 +80,29 @@ public class SolicitacaoResource {
 		return ResponseEntity.noContent().build();
 	}
 
-	//Cadastra Solicitação Geral
-	@PostMapping
-	public ResponseEntity<Object> salvar(@RequestBody @Valid SolicitacaoLocalDto solicitacaoLocalDto) {
+	//Cadastra Solicitação de Transporte
+	@PostMapping(value = "/transporte")
+	public ResponseEntity<Object> solicitarTransporte(@RequestBody @Valid SolicitacaoTransporteDto solicitacaoTransporteDto) {
+
+		var solicitacao = new Solicitacao();
+		BeanUtils.copyProperties(solicitacaoTransporteDto, solicitacao);
+		solicitacao = solicitacaoService.solicitarTransporte(solicitacaoTransporteDto, solicitacao);
+
+		var viagem = new Viagem();
+		BeanUtils.copyProperties(solicitacaoTransporteDto, viagem);
+		viagem.setSolicitacao(new Solicitacao(solicitacao.getId()));
+		viagem.setTransporte(new TransporteModel(solicitacaoTransporteDto.getIdTransporte()));
+		viagem.setMotorista(new MotoristaModel(solicitacaoTransporteDto.getIdMotorista()));
+		viagemService.salvar(viagem);
+
+		//cadastrar passageiros
+
+		return ResponseEntity.status(HttpStatus.OK).body("Solicitação de transporte enviada com sucesso!");
+	}
+
+	//Cadastra Solicitação de Local
+	@PostMapping(value = "/local")
+	public ResponseEntity<Object> solicitarLocal(@RequestBody @Valid SolicitacaoLocalDto solicitacaoLocalDto) {
 
 		var solicitacao = new Solicitacao();
 		BeanUtils.copyProperties(solicitacaoLocalDto, solicitacao);
@@ -119,6 +132,7 @@ public class SolicitacaoResource {
 		return ResponseEntity.ok().body(viagemService.buscarPorSolicitacao(id));
 	}
 
+
 	@PostMapping(value = "/viagens")
 	public ResponseEntity<Viagem> salvarViagem(@Valid @RequestBody Viagem viagem) {
 		Viagem viagemSalva = viagemService.salvar(viagem);
@@ -134,9 +148,18 @@ public class SolicitacaoResource {
 	}
 
 	@PutMapping("/viagens/{id}")
-	public ResponseEntity<Viagem> atualizar(@PathVariable Long id, @Valid @RequestBody Viagem viagem) {
-		Viagem viagemSalva = viagemService.atualizar(id, viagem);
-		return ResponseEntity.ok(viagemSalva);
+	public ResponseEntity<Object> atualizarRespostaTransporte(@PathVariable(value = "id") Long id,
+											@RequestBody @Valid SolicitacaoTransporteAtualizarDto transporteAtualizarDto) {
+
+		Solicitacao solicitacaoSalva = solicitacaoService.atualizarResposta(id, transporteAtualizarDto);
+
+		//return ResponseEntity.ok(solicitacaoSalva);
+		return ResponseEntity.status(HttpStatus.OK).body("Solicitação de transporte atualizado com sucesso!");
 	}
+
+	//	@GetMapping("/resumo/equipamentos")
+	//	public ResponseEntity<Page<ReservaDto>> buscarReservasEquipamento(RecursoFilter recursoFilter, Pageable pageable) {
+	//		return ResponseEntity.ok().body(solicitacaoService.reservaEquipamentoPorData(recursoFilter, pageable));
+	//	}
 
 }

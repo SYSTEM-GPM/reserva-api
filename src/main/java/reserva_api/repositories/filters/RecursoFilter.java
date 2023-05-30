@@ -12,18 +12,18 @@ public class RecursoFilter {
 	private LocalDateTime dataFinal;
 	private String externo;
 	@Enumerated(EnumType.STRING)
-	private StatusSolicitacao status;
+	private StatusSolicitacao autorizacao;
 
 	public RecursoFilter() {
 		super();
 	}
 
-	public RecursoFilter(Long idRecurso, LocalDateTime dataInicio, LocalDateTime dataFinal, StatusSolicitacao status) {
+	public RecursoFilter(Long idRecurso, LocalDateTime dataInicio, LocalDateTime dataFinal, StatusSolicitacao autorizacao) {
 		super();
 		this.idRecurso = idRecurso;
 		this.dataInicio = dataInicio;
 		this.dataFinal = dataFinal;
-		this.status = status;
+		this.autorizacao = autorizacao;
 	}
 
 	public Long getIdRecurso() {
@@ -58,12 +58,12 @@ public class RecursoFilter {
 		this.externo = externo;
 	}
 
-	public StatusSolicitacao getStatus() {
-		return status;
+	public StatusSolicitacao getAutorizacao() {
+		return autorizacao;
 	}
 
-	public void setStatus(StatusSolicitacao status) {
-		this.status = status;
+	public void setAutorizacao(StatusSolicitacao autorizacao) {
+		this.autorizacao = autorizacao;
 	}
 
 }

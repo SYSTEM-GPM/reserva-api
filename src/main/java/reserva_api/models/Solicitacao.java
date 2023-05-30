@@ -30,7 +30,7 @@ public class Solicitacao implements Serializable {
 	private LocalDateTime dataFinal;
 
 	@Column(nullable = false, length = 255)
-	private String justificativa;
+	private String finalidade;
 
 	@Column(nullable = false)
 	private LocalDateTime dataSolicitacao;
@@ -46,7 +46,10 @@ public class Solicitacao implements Serializable {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 255)
-	private StatusSolicitacao status;
+	private StatusSolicitacao autorizacao;
+
+	@Column(nullable = true, length = 255)
+	private String justificativa;
 
 	@NotNull(message = "Solicitante é obrigatório")
 	@JsonIgnoreProperties({"setor","cpf","dataNascimento"})
@@ -72,7 +75,7 @@ public class Solicitacao implements Serializable {
 
 	public Solicitacao(Long id, LocalDateTime dataInicio, LocalDateTime dataFinal, String justificativa,
 					   LocalDateTime dataSolicitacao, LocalDateTime dataRetirada, LocalDateTime dataDevolucao,
-					   StatusSolicitacao status, PessoaModel solicitante) {
+					   StatusSolicitacao autorizacao, PessoaModel solicitante) {
 		super();
 		this.id = id;
 		this.dataInicio = dataInicio;
@@ -81,7 +84,7 @@ public class Solicitacao implements Serializable {
 		this.dataSolicitacao = dataSolicitacao;
 		this.dataRetirada = dataRetirada;
 		this.dataDevolucao = dataDevolucao;
-		this.status = status;
+		this.autorizacao = autorizacao;
 		this.solicitante = solicitante;
 	}
 
@@ -109,12 +112,12 @@ public class Solicitacao implements Serializable {
 		this.dataFinal = dataFinal;
 	}
 
-	public String getJustificativa() {
-		return justificativa;
+	public String getFinalidade() {
+		return finalidade;
 	}
 
-	public void setJustificativa(String justificativa) {
-		this.justificativa = justificativa;
+	public void setFinalidade(String finalidade) {
+		this.finalidade = finalidade;
 	}
 
 	public LocalDateTime getDataSolicitacao() {
@@ -149,12 +152,20 @@ public class Solicitacao implements Serializable {
 		this.externo = externo;
 	}
 
-	public StatusSolicitacao getStatus() {
-		return status;
+	public StatusSolicitacao getAutorizacao() {
+		return autorizacao;
 	}
 
-	public void setStatus(StatusSolicitacao status) {
-		this.status = status;
+	public void setAutorizacao(StatusSolicitacao autorizacao) {
+		this.autorizacao = autorizacao;
+	}
+
+	public String getJustificativa() {
+		return justificativa;
+	}
+
+	public void setJustificativa(String justificativa) {
+		this.justificativa = justificativa;
 	}
 
 	public PessoaModel getSolicitante() {

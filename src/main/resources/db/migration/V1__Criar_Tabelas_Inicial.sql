@@ -92,9 +92,10 @@ CREATE TABLE IF NOT EXISTS `solicitacao` (
   `data_inicio` datetime(6) NOT NULL,
   `data_retirada` datetime(6) DEFAULT NULL,
   `data_solicitacao` datetime(6) DEFAULT NULL,
-  `justificativa` varchar(255) DEFAULT NULL,
+  `finalidade` varchar(255) DEFAULT NULL,
   `externo` varchar(255) DEFAULT NULL,
-  `status` varchar(255) DEFAULT NULL,
+  `autorizacao` varchar(255) DEFAULT NULL,
+  `justificativa` varchar(255) DEFAULT NULL,
   `solicitante_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FKef4xqfy5wf4fqe8a3vjut0a04` (`solicitante_id`),
@@ -140,11 +141,8 @@ CREATE TABLE IF NOT EXISTS `usuario_permissao` (
 -- Copiando estrutura para tabela reserva_data.viagem
 CREATE TABLE IF NOT EXISTS `viagem` (
   `id` bigint NOT NULL AUTO_INCREMENT,
+  `saida` varchar(255) DEFAULT NULL,
   `destino` varchar(255) DEFAULT NULL,
-  `numero_apolice_seguro` varchar(255) DEFAULT NULL,
-  `quilometragem_chegada` bigint DEFAULT NULL,
-  `quilometragem_saida` bigint DEFAULT NULL,
-  `uri_apolice_seguro` varchar(255) DEFAULT NULL,
   `motorista_id` bigint DEFAULT NULL,
   `solicitacao_id` bigint DEFAULT NULL,
   `transporte_id` bigint DEFAULT NULL,
@@ -159,12 +157,12 @@ CREATE TABLE IF NOT EXISTS `viagem` (
 
 -- Copiando estrutura para tabela reserva_data.passageiro
 CREATE TABLE IF NOT EXISTS `passageiro` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `viagem_id` bigint NOT NULL,
-  `pessoa_id` bigint NOT NULL,
-  PRIMARY KEY (`viagem_id`,`pessoa_id`),
-  KEY `FKtdmwrr01n8uc14aetktk8adhv` (`pessoa_id`),
-  CONSTRAINT `FKgl77bbt9lacqbqdx3ctud58ax` FOREIGN KEY (`viagem_id`) REFERENCES `viagem` (`id`),
-  CONSTRAINT `FKtdmwrr01n8uc14aetktk8adhv` FOREIGN KEY (`pessoa_id`) REFERENCES `pessoa` (`id`)
+  `cpf` varchar(255) DEFAULT NULL,
+  `nome` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `FKgl77bbt9lacqbqdx3ctud58ax` FOREIGN KEY (`viagem_id`) REFERENCES `viagem` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Exportação de dados foi desmarcado.
