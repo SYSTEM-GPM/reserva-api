@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -217,7 +216,10 @@ public class PessoaResource {
 	@PostMapping
 	//o retorno de ResponseEntity sera um objeto (status e corpo) utilizado para retornar uma resposta ao usuario
 	//@Valid pode gerar o badrequest caso o valor informado pelo usuario venha invalido
-	public ResponseEntity<Object> salvar(@RequestBody @Valid PessoaDto pessoaDto) throws MessagingException {
+	public ResponseEntity<Object> salvar(@RequestBody @Valid PessoaDto pessoaDto) {
+		pessoaDto.setCpf(pessoaDto.getCpf().replaceAll("[^0-9]", ""));
+		pessoaDto.setTelefone(pessoaDto.getTelefone().replaceAll("[^0-9]", ""));
+		pessoaDto.setSiape(pessoaDto.getSiape().replaceAll("[^0-9]", ""));
 
 		var erros = new ApiError();
 		//---Validações

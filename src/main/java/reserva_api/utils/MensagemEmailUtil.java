@@ -24,13 +24,6 @@ public class  MensagemEmailUtil {
                         pessoa.getNome(), pessoa.getEmail(), pessoa.getCodigoAtivacao());
     }
 
-    // envio para o ADMIN confirmar a conta
-    public static String confirmarAdmin(PessoaModel pessoaModel) {
-        return
-                MessageFormat.format("<h3>Ola Admin!</h3><p>Uma nova conta de usuário foi registrada no <strong>Sistema GPMM</strong></p><p>Dados:</p><p>Nome: {0} </p><p>Email: {1} </p><p>Siape: {2} </p><p>Para efetuar a confirmação e ativação da conta, por favor, entre no sistema.</p></br><p>Atenciosamente,</p><p><strong>Equipe do Sistema GPMM</strong></p>",
-                        pessoaModel.getNome(), pessoaModel.getNome(), pessoaModel.getSiape());
-    }
-
     // fazer um para solicitação de transporte (envio para o ADMIN)
 
 }
