@@ -3,8 +3,10 @@ package reserva_api.dtos;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import reserva_api.models.PassageirosModel;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class SolicitacaoTransporteDto {
 
@@ -17,6 +19,7 @@ public class SolicitacaoTransporteDto {
     private String finalidade; // Descrição da Atividade
 
     //Passageiros
+    private List<PassageirosDto> passageiros;
 
     @NotNull(message = "Data inicio é obrigatório")
     @FutureOrPresent(message = "Data da partida deve ser uma data futura")
@@ -97,5 +100,13 @@ public class SolicitacaoTransporteDto {
 
     public void setIdTransporte(Long idTransporte) {
         this.idTransporte = idTransporte;
+    }
+
+    public List<PassageirosDto> getPassageiros() {
+        return passageiros;
+    }
+
+    public void setPassageiros(List<PassageirosDto> passageiros) {
+        this.passageiros = passageiros;
     }
 }

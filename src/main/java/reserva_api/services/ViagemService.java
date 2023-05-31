@@ -8,11 +8,7 @@ import org.springframework.stereotype.Service;
 
 import reserva_api.dtos.SolicitacaoTransporteDto;
 import reserva_api.models.*;
-import reserva_api.repositories.MotoristaRepository;
-import reserva_api.repositories.PessoaRepository;
-import reserva_api.repositories.SolicitacaoRepository;
-import reserva_api.repositories.TransporteRepository;
-import reserva_api.repositories.ViagemRepository;
+import reserva_api.repositories.*;
 
 import java.util.List;
 
@@ -29,6 +25,9 @@ public class ViagemService {
 	private TransporteRepository transporteRepository;
 	@Autowired
 	private PessoaRepository pessoaRepository;
+
+	@Autowired
+	private PassageirosRepository passageirosRepository;
 
 	public Page<Viagem> buscarTodas(Pageable pageable) {
 		return viagemRepository.findAll(pageable);
@@ -67,4 +66,7 @@ public class ViagemService {
 
 	}
 
+	public PassageirosModel salvarPassageiros(PassageirosModel passageiro) {
+		return passageirosRepository.save(passageiro);
+	}
 }
