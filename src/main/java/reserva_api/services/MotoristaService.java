@@ -4,10 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import reserva_api.dtos.projection.MotoristaProjection;
 import reserva_api.models.MotoristaModel;
-import reserva_api.models.PessoaModel;
 import reserva_api.repositories.MotoristaRepository;
-import reserva_api.repositories.PessoaRepository;
 
 import java.util.Optional;
 
@@ -19,6 +18,10 @@ public class MotoristaService {
 
     public Page<MotoristaModel> buscarTodos(Pageable pageable) {
         return motoristaRepository.findAll(pageable);
+    }
+
+    public Page<MotoristaProjection> buscarTodosMotoristas(Pageable pageable) {
+        return motoristaRepository.buscarTodosMotoristas(pageable);
     }
 
     public MotoristaModel salvar(MotoristaModel motorista) {
