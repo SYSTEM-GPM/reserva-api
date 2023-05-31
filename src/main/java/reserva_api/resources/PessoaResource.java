@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +17,7 @@ import jakarta.validation.Valid;
 import reserva_api.dtos.*;
 import reserva_api.models.*;
 import reserva_api.models.enums.StatusConta;
+import reserva_api.models.enums.TipoPerfil;
 import reserva_api.models.enums.TipoTelefone;
 import reserva_api.repositories.filters.PessoaFilter;
 import reserva_api.utils.ApiError;
@@ -200,6 +200,45 @@ public class PessoaResource {
 		return ResponseEntity.status(HttpStatus.OK).body(new ApiSuccess("Senha salva com sucesso!"));
 	}
 
+	@PutMapping("/{id}/status")
+	public ResponseEntity atualizarStatus(@PathVariable Long id, @RequestBody @Valid AtualizarStatusDto statusDto) {
+		var pessoa = pessoaService.buscarPorId(id);
+
+		if(pessoa.isEmpty()) {
+			return ResponseEntity
+					.status(HttpStatus.NOT_FOUND)
+					.body(new ApiError( "Usuário não encontrado!"));
+		}
+
+		var pessoaModel = pessoa.get();
+
+		if (pessoaModel.getStatus() == statusDto.getStatus()) {
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body(new ApiError( "Status fornecido é igual ao atual!"));
+		}
+
+		if (pessoaModel.getStatus() == StatusConta.PENDENTE_ATIVACAO_USUARIO) {
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body(new ApiError( "Conta pendente de ativação pelo usuário!"));
+		}
+
+		// caso de usuários antigos sem e-mail
+		if (pessoaModel.getStatus() == StatusConta.DESATIVADA &&
+				(pessoaModel.getEmail() == null || pessoaModel.getEmail().isEmpty())) {
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body(new ApiError( "Usuário não pode ser ativado sem um e-mail cadastrado!"));
+		}
+
+		pessoaModel.setStatus(statusDto.getStatus());
+
+		pessoaService.salvar(pessoaModel);
+
+		return ResponseEntity.status(HttpStatus.OK).body(new ApiSuccess("Staus mudado com sucesso!"));
+	}
+
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<Object> buscarPorId(@PathVariable Long id) {
 		var pessoaModel = pessoaService.buscarPorId(id);
@@ -217,7 +256,10 @@ public class PessoaResource {
 	@PostMapping
 	//o retorno de ResponseEntity sera um objeto (status e corpo) utilizado para retornar uma resposta ao usuario
 	//@Valid pode gerar o badrequest caso o valor informado pelo usuario venha invalido
-	public ResponseEntity<Object> salvar(@RequestBody @Valid PessoaDto pessoaDto) throws MessagingException {
+	public ResponseEntity<Object> salvar(@RequestBody @Valid PessoaDto pessoaDto) {
+		pessoaDto.setCpf(pessoaDto.getCpf().replaceAll("[^0-9]", ""));
+		pessoaDto.setTelefone(pessoaDto.getTelefone().replaceAll("[^0-9]", ""));
+		pessoaDto.setSiape(pessoaDto.getSiape().replaceAll("[^0-9]", ""));
 
 		var erros = new ApiError();
 		//---Validações
@@ -240,10 +282,6 @@ public class PessoaResource {
 		if(!erros.getErrors().isEmpty()) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(erros);
 		}
-
-		pessoaDto.setCpf(pessoaDto.getCpf().replaceAll("[^0-9]", ""));
-		pessoaDto.setTelefone(pessoaDto.getTelefone().replaceAll("[^0-9]", ""));
-		pessoaDto.setSiape(pessoaDto.getSiape().replaceAll("[^0-9]", ""));
 
 		//validar setor e data com valores null
 
@@ -287,6 +325,51 @@ public class PessoaResource {
 		//status é uma resposta
 		//body informa retorno do metodo save com os dados ja salvos no banco
 		//return ResponseEntity.status(HttpStatus.CREATED).body(pessoaModel);
+		return ResponseEntity.status(HttpStatus.CREATED).body(new ApiSuccess("Cadastro realizado com sucesso!"));
+	}
+
+	@PostMapping(value = "/auto")
+	public ResponseEntity<Object> salvarNormal(@RequestBody @Valid CadastroUsuarioDto cadastroUsuarioDto) {
+		cadastroUsuarioDto.setCpf(cadastroUsuarioDto.getCpf().replaceAll("[^0-9]", ""));
+		cadastroUsuarioDto.setTelefone(cadastroUsuarioDto.getTelefone().replaceAll("[^0-9]", ""));
+		cadastroUsuarioDto.setSiape(cadastroUsuarioDto.getSiape().replaceAll("[^0-9]", ""));
+
+		var erros = new ApiError();
+		if(pessoaService.existsByCpf(cadastroUsuarioDto.getCpf())){
+			erros.setError( "CPF já está em uso!");
+		}
+
+		if(pessoaService.existsBySiape(cadastroUsuarioDto.getSiape())){
+			erros.setError( "Siape já está em uso!");
+		}
+
+		if(pessoaService.existsByEmail(cadastroUsuarioDto.getEmail())){
+			erros.setError( "Email já está em uso!");
+		}
+
+		if(!erros.getErrors().isEmpty()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(erros);
+		}
+
+		var pessoaModel = new PessoaModel();
+		BeanUtils.copyProperties(cadastroUsuarioDto, pessoaModel);
+
+
+		var telefone = new TelefoneModel();
+		telefone.setTipo(TipoTelefone.CELULAR);
+		telefone.setNumero(cadastroUsuarioDto.getTelefone());
+		pessoaModel.setTelefone(telefone);
+
+		var setor = new SetorModel();
+		setor.setId(cadastroUsuarioDto.getSetor());
+		pessoaModel.setSetor(setor);
+
+		pessoaModel.setStatus(StatusConta.PENDENTE_ATIVACAO_ADMIN);
+		pessoaModel.setTipoPerfil(TipoPerfil.NORMAL);
+		pessoaModel.setSenha(encoder.encode(cadastroUsuarioDto.getSenha()));
+
+		pessoaService.salvar(pessoaModel);
+
 		return ResponseEntity.status(HttpStatus.CREATED).body(new ApiSuccess("Cadastro realizado com sucesso!"));
 	}
 

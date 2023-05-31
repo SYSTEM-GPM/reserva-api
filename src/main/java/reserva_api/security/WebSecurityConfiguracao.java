@@ -43,13 +43,16 @@ public class WebSecurityConfiguracao {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .requestMatchers(HttpMethod.POST, "/login", "/pessoas/envia-codigo/**", "/pessoas/valida-codigo").permitAll()
+                .requestMatchers(HttpMethod.POST,
+                        "/login", "/pessoas/envia-codigo/**", "/pessoas/valida-codigo","/pessoas/auto"
+                ).permitAll()
                 .requestMatchers(HttpMethod.PUT, "/pessoas/{id}/senha").permitAll()
                 .requestMatchers(HttpMethod.GET,
                         "/swagger-ui/**", "/configuration/ui",  "/swagger-resources/**",
                         "/configuration/security", "/swagger-ui.html", "/v3/api-docs/swagger-config/**",
                         "/webjars/**", "/v3/api-docs"
                 ).permitAll()
+                .requestMatchers(HttpMethod.GET, "/setores").permitAll()
                 .anyRequest().authenticated().and()
                 .authenticationManager(authenticationManager)
                 .addFilterBefore(new JwtValidarFilter(authenticationManager, handlerExceptionResolver), JwtAutentificarFilter.class);
