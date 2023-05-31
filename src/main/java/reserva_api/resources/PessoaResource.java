@@ -200,6 +200,45 @@ public class PessoaResource {
 		return ResponseEntity.status(HttpStatus.OK).body(new ApiSuccess("Senha salva com sucesso!"));
 	}
 
+	@PutMapping("/{id}/status")
+	public ResponseEntity atualizarStatus(@PathVariable Long id, @RequestBody @Valid AtualizarStatusDto statusDto) {
+		var pessoa = pessoaService.buscarPorId(id);
+
+		if(pessoa.isEmpty()) {
+			return ResponseEntity
+					.status(HttpStatus.NOT_FOUND)
+					.body(new ApiError( "Usuário não encontrado!"));
+		}
+
+		var pessoaModel = pessoa.get();
+
+		if (pessoaModel.getStatus() == statusDto.getStatus()) {
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body(new ApiError( "Status fornecido é igual ao atual!"));
+		}
+
+		if (pessoaModel.getStatus() == StatusConta.PENDENTE_ATIVACAO_USUARIO) {
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body(new ApiError( "Conta pendente de ativação pelo usuário!"));
+		}
+
+		// caso de usuários antigos sem e-mail
+		if (pessoaModel.getStatus() == StatusConta.DESATIVADA &&
+				(pessoaModel.getEmail() == null || pessoaModel.getEmail().isEmpty())) {
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body(new ApiError( "Usuário não pode ser ativado sem um e-mail cadastrado!"));
+		}
+
+		pessoaModel.setStatus(statusDto.getStatus());
+
+		pessoaService.salvar(pessoaModel);
+
+		return ResponseEntity.status(HttpStatus.OK).body(new ApiSuccess("Staus mudado com sucesso!"));
+	}
+
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<Object> buscarPorId(@PathVariable Long id) {
 		var pessoaModel = pessoaService.buscarPorId(id);
