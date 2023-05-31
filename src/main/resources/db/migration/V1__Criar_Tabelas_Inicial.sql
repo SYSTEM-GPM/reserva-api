@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS `solicitacao` (
   `data_retirada` datetime(6) DEFAULT NULL,
   `data_solicitacao` datetime(6) DEFAULT NULL,
   `justificativa` varchar(255) DEFAULT NULL,
+  `externo` varchar(255) DEFAULT NULL,
   `status` varchar(255) DEFAULT NULL,
   `solicitante_id` bigint NOT NULL,
   PRIMARY KEY (`id`),

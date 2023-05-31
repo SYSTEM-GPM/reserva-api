@@ -10,7 +10,7 @@ public class RecursoFilter {
 	private Long idRecurso;
 	private LocalDateTime dataInicio;
 	private LocalDateTime dataFinal;
-
+	private String externo;
 	@Enumerated(EnumType.STRING)
 	private StatusSolicitacao status;
 
@@ -48,6 +48,14 @@ public class RecursoFilter {
 
 	public void setDataFinal(LocalDateTime dataFinal) {
 		this.dataFinal = dataFinal;
+	}
+
+	public String getExterno() {
+		return externo;
+	}
+
+	public void setExterno(String externo) {
+		this.externo = externo;
 	}
 
 	public StatusSolicitacao getStatus() {
