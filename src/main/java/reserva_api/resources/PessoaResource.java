@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import reserva_api.dtos.*;
 import reserva_api.models.*;
 import reserva_api.models.enums.StatusConta;
+import reserva_api.models.enums.TipoPerfil;
 import reserva_api.models.enums.TipoTelefone;
 import reserva_api.repositories.filters.PessoaFilter;
 import reserva_api.utils.ApiError;
@@ -243,10 +244,6 @@ public class PessoaResource {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(erros);
 		}
 
-		pessoaDto.setCpf(pessoaDto.getCpf().replaceAll("[^0-9]", ""));
-		pessoaDto.setTelefone(pessoaDto.getTelefone().replaceAll("[^0-9]", ""));
-		pessoaDto.setSiape(pessoaDto.getSiape().replaceAll("[^0-9]", ""));
-
 		//validar setor e data com valores null
 
 		//---
@@ -289,6 +286,51 @@ public class PessoaResource {
 		//status é uma resposta
 		//body informa retorno do metodo save com os dados ja salvos no banco
 		//return ResponseEntity.status(HttpStatus.CREATED).body(pessoaModel);
+		return ResponseEntity.status(HttpStatus.CREATED).body(new ApiSuccess("Cadastro realizado com sucesso!"));
+	}
+
+	@PostMapping(value = "/auto")
+	public ResponseEntity<Object> salvarNormal(@RequestBody @Valid CadastroUsuarioDto cadastroUsuarioDto) {
+		cadastroUsuarioDto.setCpf(cadastroUsuarioDto.getCpf().replaceAll("[^0-9]", ""));
+		cadastroUsuarioDto.setTelefone(cadastroUsuarioDto.getTelefone().replaceAll("[^0-9]", ""));
+		cadastroUsuarioDto.setSiape(cadastroUsuarioDto.getSiape().replaceAll("[^0-9]", ""));
+
+		var erros = new ApiError();
+		if(pessoaService.existsByCpf(cadastroUsuarioDto.getCpf())){
+			erros.setError( "CPF já está em uso!");
+		}
+
+		if(pessoaService.existsBySiape(cadastroUsuarioDto.getSiape())){
+			erros.setError( "Siape já está em uso!");
+		}
+
+		if(pessoaService.existsByEmail(cadastroUsuarioDto.getEmail())){
+			erros.setError( "Email já está em uso!");
+		}
+
+		if(!erros.getErrors().isEmpty()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(erros);
+		}
+
+		var pessoaModel = new PessoaModel();
+		BeanUtils.copyProperties(cadastroUsuarioDto, pessoaModel);
+
+
+		var telefone = new TelefoneModel();
+		telefone.setTipo(TipoTelefone.CELULAR);
+		telefone.setNumero(cadastroUsuarioDto.getTelefone());
+		pessoaModel.setTelefone(telefone);
+
+		var setor = new SetorModel();
+		setor.setId(cadastroUsuarioDto.getSetor());
+		pessoaModel.setSetor(setor);
+
+		pessoaModel.setStatus(StatusConta.PENDENTE_ATIVACAO_ADMIN);
+		pessoaModel.setTipoPerfil(TipoPerfil.NORMAL);
+		pessoaModel.setSenha(encoder.encode(cadastroUsuarioDto.getSenha()));
+
+		pessoaService.salvar(pessoaModel);
+
 		return ResponseEntity.status(HttpStatus.CREATED).body(new ApiSuccess("Cadastro realizado com sucesso!"));
 	}
 
