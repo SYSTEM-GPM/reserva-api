@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import reserva_api.dtos.ReservaDto;
+import reserva_api.dtos.SolicitacaoTransporteAtualizarDto;
+import reserva_api.dtos.SolicitacaoTransporteDto;
 import reserva_api.models.*;
 import reserva_api.models.enums.StatusSolicitacao;
 import reserva_api.repositories.PessoaRepository;
@@ -76,14 +78,14 @@ public class SolicitacaoService {
 	public Solicitacao salvar(Long idPessoa, Long idLocal, Solicitacao solicitacao) {
 
 		solicitacao.setDataSolicitacao(LocalDateTime.now());
-		solicitacao.setStatus(StatusSolicitacao.RESERVADO);
+		solicitacao.setAutorizacao(StatusSolicitacao.RESERVADO);
 		solicitacao.setSolicitante(new PessoaModel(idPessoa));
 		pessoaRepository.findById(idPessoa).orElseThrow();
 
 		solicitacao.getRecursos().add(new LocalModel(idLocal));
 
 		RecursoFilter recursoFilter = new RecursoFilter(null, solicitacao.getDataInicio(),
-				solicitacao.getDataFinal(),solicitacao.getStatus());
+				solicitacao.getDataFinal(),solicitacao.getAutorizacao());
 
 		for (Recurso r : solicitacao.getRecursos()) {
 			recursoRepository.findById(r.getId()).orElseThrow();
@@ -105,7 +107,7 @@ public class SolicitacaoService {
 
 		pessoaRepository.findById(solicitacao.getSolicitante().getId()).orElseThrow();
 		RecursoFilter recursoFilter = new RecursoFilter(null, solicitacao.getDataInicio(),
-				solicitacao.getDataFinal(),solicitacao.getStatus());
+				solicitacao.getDataFinal(),solicitacao.getAutorizacao());
 		for (Recurso r : solicitacao.getRecursos()) {
 			recursoRepository.findById(r.getId()).orElseThrow();
 			recursoFilter.setIdRecurso(r.getId());
@@ -117,4 +119,38 @@ public class SolicitacaoService {
 		return solicitacaoRepository.save(solicitacaoSalva);
 	}
 
+	public Solicitacao solicitarTransporte(SolicitacaoTransporteDto solicitacaoTransporteDto, Solicitacao solicitacao) {
+
+		solicitacao.setDataSolicitacao(LocalDateTime.now());
+		solicitacao.setAutorizacao(StatusSolicitacao.SOLICITADO);
+		solicitacao.setSolicitante(new PessoaModel(solicitacaoTransporteDto.getIdPessoa()));
+		pessoaRepository.findById(solicitacaoTransporteDto.getIdPessoa()).orElseThrow();
+
+		solicitacao.getRecursos().add(new TransporteModel(solicitacaoTransporteDto.getIdTransporte()));
+
+		RecursoFilter recursoFilter = new RecursoFilter(null, solicitacao.getDataInicio(),
+				solicitacao.getDataFinal(),solicitacao.getAutorizacao());
+
+		for (Recurso r : solicitacao.getRecursos()) {
+			recursoRepository.findById(r.getId()).orElseThrow();
+			recursoFilter.setIdRecurso(r.getId());
+			if (!IsLivre(recursoFilter)) {
+				throw new NonFreeResourceException(r.getId());
+			}
+		}
+
+		return solicitacaoRepository.save(solicitacao);
+	}
+
+	public Solicitacao atualizarResposta(Long id, SolicitacaoTransporteAtualizarDto transporteAtualizarDto) {
+
+		Solicitacao solicitacao = solicitacaoRepository.findById(id).orElseThrow();
+		solicitacao.setAutorizacao(transporteAtualizarDto.getAutorizacao());
+
+		if (solicitacao.getAutorizacao().equals(StatusSolicitacao.NEGADO)){
+			solicitacao.setJustificativa(transporteAtualizarDto.getJustificativa());
+		}
+
+		return solicitacaoRepository.save(solicitacao);
+	}
 }

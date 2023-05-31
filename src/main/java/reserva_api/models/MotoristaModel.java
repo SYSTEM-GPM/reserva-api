@@ -27,6 +27,15 @@ public class MotoristaModel implements Serializable {
 	@OneToMany(mappedBy = "motorista")
 	private Set<Viagem> viagens = new HashSet<>();
 
+	public MotoristaModel() {
+		super();
+	}
+
+	public MotoristaModel(Long id) {
+		super();
+		this.id = id;
+	}
+
 	public Long getId() {
 		return id;
 	}

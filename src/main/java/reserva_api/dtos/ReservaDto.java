@@ -13,13 +13,13 @@ public class ReservaDto {
 	private String solicitante;
 	private String telefone;
 	private String externo;
-	private String status;
+	private String autorizacao;
 
 	public ReservaDto() {
 	}
 
 	public ReservaDto(Long idSolicitacao, Long idRecurso, String descricaoRecurso, LocalDateTime dataInicio,
-					  LocalDateTime dataFinal, String solicitante, String telefone, String externo, StatusSolicitacao status) {
+					  LocalDateTime dataFinal, String solicitante, String telefone, String externo, StatusSolicitacao autorizacao) {
 		super();
 		this.idSolicitacao = idSolicitacao;
 		this.idRecurso = idRecurso;
@@ -29,7 +29,7 @@ public class ReservaDto {
 		this.solicitante = solicitante;
 		this.telefone = telefone;
 		this.externo = externo;
-		this.status = status.toString();
+		this.autorizacao = autorizacao.toString();
 	}
 
 	public Long getIdSolicitacao() {
@@ -100,12 +100,12 @@ public class ReservaDto {
 		this.externo = externo;
 	}
 
-	public String getStatus() {
-		return status;
+	public String getAutorizacao() {
+		return autorizacao;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setAutorizacao(String autorizacao) {
+		this.autorizacao = autorizacao;
 	}
 
 

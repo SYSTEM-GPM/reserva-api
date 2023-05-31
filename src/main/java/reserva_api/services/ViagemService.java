@@ -6,13 +6,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import reserva_api.models.Solicitacao;
-import reserva_api.models.Viagem;
+import reserva_api.dtos.SolicitacaoTransporteDto;
+import reserva_api.models.*;
 import reserva_api.repositories.MotoristaRepository;
 import reserva_api.repositories.PessoaRepository;
 import reserva_api.repositories.SolicitacaoRepository;
 import reserva_api.repositories.TransporteRepository;
 import reserva_api.repositories.ViagemRepository;
+
+import java.util.List;
 
 @Service
 public class ViagemService {
@@ -58,10 +60,10 @@ public class ViagemService {
 	}
 
 	private void validarViagem(Viagem viagem) {
+		transporteRepository.findById(viagem.getTransporte().getId()).orElseThrow();
 		motoristaRepository.findById(viagem.getMotorista().getId()).orElseThrow();
 		solicitacaoRepository.findById(viagem.getSolicitacao().getId()).orElseThrow();
-		transporteRepository.findById(viagem.getTransporte().getId()).orElseThrow();
-		viagem.getPassageiros().stream().forEach(x -> pessoaRepository.findById(x.getId()).orElseThrow());
+		//viagem.getPassageiros().stream().forEach(x -> pessoaRepository.findById(x.getId()).orElseThrow());
 
 	}
 

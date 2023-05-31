@@ -1,5 +1,5 @@
 
-INSERT INTO `solicitacao` (`id`, `data_devolucao`, `data_final`, `data_inicio`, `data_retirada`, `data_solicitacao`, `justificativa`, `status`, `solicitante_id`) VALUES
+INSERT INTO `solicitacao` (`id`, `data_devolucao`, `data_final`, `data_inicio`, `data_retirada`, `data_solicitacao`, `finalidade`, `autorizacao`, `solicitante_id`) VALUES
 	(1, NULL, '2023-04-25 12:00:00.000000', '2023-04-25 10:00:00.000000', NULL, '2023-04-21 00:15:12.552827', ' Viagem para tabalho de campo.', 'SOLICITADO', 1),
 	(2, '2023-05-02 18:00:00.000000', '2023-05-02 08:00:00.000000', '2023-05-02 07:00:00.000000', '2023-05-02 07:30:00.000000', '2023-04-21 12:30:00.000000', 'Participação em congresso fora da cidade.', 'DEVOLVIDO', 2),
 	(3, NULL, '2023-05-06 22:00:00.000000', '2023-05-06 18:00:00.000000', NULL, '2023-04-22 09:00:00.000000', 'Viagem de negócios.', 'SOLICITADO', 3),
