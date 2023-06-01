@@ -17,6 +17,8 @@ import reserva_api.repositories.LocalRepository;
 import reserva_api.repositories.RecursoRepository;
 import reserva_api.repositories.TransporteRepository;
 
+import java.util.Optional;
+
 @Service
 public class RecursoService {
 
@@ -46,6 +48,10 @@ public class RecursoService {
 
 	public Page<TransporteModel> buscarTransportes(Pageable pageable) {
 		return transporteRepository.findAll(pageable);
+	}
+
+	public Optional<TransporteModel> buscarTransportePorId(Long id) {
+		return transporteRepository.findById(id);
 	}
 
 	public TransporteModel salvar(TransporteModel transporte) {

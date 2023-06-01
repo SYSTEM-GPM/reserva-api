@@ -24,6 +24,7 @@ import jakarta.validation.Valid;
 import reserva_api.dtos.*;
 import reserva_api.models.*;
 import reserva_api.repositories.filters.RecursoFilter;
+import reserva_api.services.RecursoService;
 import reserva_api.services.SolicitacaoService;
 import reserva_api.services.ViagemService;
 import reserva_api.utils.ApiError;
@@ -37,6 +38,9 @@ public class SolicitacaoResource {
 
 	@Autowired
 	private ViagemService viagemService;
+
+	@Autowired
+	private RecursoService recursoService;
 
 	@GetMapping
 	public ResponseEntity<Page<Solicitacao>> buscarTodas(Pageable pageable) {
@@ -84,6 +88,22 @@ public class SolicitacaoResource {
 	@PostMapping(value = "/transporte")
 	public ResponseEntity<Object> solicitarTransporte(@RequestBody @Valid SolicitacaoTransporteDto solicitacaoTransporteDto) {
 
+		List<PassageirosDto> passageirosDto = solicitacaoTransporteDto.getPassageiros();
+
+		//pega assentos do veiculo
+		var transporteModelOptional = recursoService.buscarTransportePorId(solicitacaoTransporteDto.getIdTransporte());
+		var transporte = transporteModelOptional.get();
+
+		var assentos = transporte.getTotalDeAssentos() - 1;
+
+		if(passageirosDto.size() > assentos){
+			return ResponseEntity
+					.status(HttpStatus.CONFLICT)
+					.body(new ApiError("O veículo "+ transporte.getDescricao()+
+							" suporta apenas "+ assentos +
+							" passageiros"));
+		}
+
 		var solicitacao = new Solicitacao();
 		BeanUtils.copyProperties(solicitacaoTransporteDto, solicitacao);
 		solicitacao = solicitacaoService.solicitarTransporte(solicitacaoTransporteDto, solicitacao);
@@ -93,9 +113,16 @@ public class SolicitacaoResource {
 		viagem.setSolicitacao(new Solicitacao(solicitacao.getId()));
 		viagem.setTransporte(new TransporteModel(solicitacaoTransporteDto.getIdTransporte()));
 		viagem.setMotorista(new MotoristaModel(solicitacaoTransporteDto.getIdMotorista()));
-		viagemService.salvar(viagem);
+		viagem = viagemService.salvar(viagem);
 
 		//cadastrar passageiros
+		for (PassageirosDto p : passageirosDto) {
+			var passageiro = new PassageirosModel();
+			BeanUtils.copyProperties(p, passageiro);
+			passageiro.setCpf(p.getCpf().replaceAll("[^0-9]", ""));
+			passageiro.setViagem(viagem);
+			viagemService.salvarPassageiros(passageiro);
+		}
 
 		return ResponseEntity.status(HttpStatus.OK).body("Solicitação de transporte enviada com sucesso!");
 	}
