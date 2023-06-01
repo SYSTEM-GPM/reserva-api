@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reserva_api.dtos.MotoristaDto;
+import reserva_api.dtos.projection.MotoristaProjection;
 import reserva_api.models.MotoristaModel;
 import reserva_api.models.PessoaModel;
 import reserva_api.services.MotoristaService;
@@ -30,8 +30,8 @@ public class MotoristaResource {
     private MotoristaService motoristaService;
 
     @GetMapping
-    public ResponseEntity<Page<MotoristaModel>> buscarTodos(Pageable pageable) {
-        return ResponseEntity.ok().body(motoristaService.buscarTodos(pageable));
+    public ResponseEntity<Page<MotoristaProjection>> buscarTodos(Pageable pageable) {
+        return ResponseEntity.ok().body(motoristaService.buscarTodosMotoristas(pageable));
     }
 
     //cadastrando motorista
