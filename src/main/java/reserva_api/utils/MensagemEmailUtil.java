@@ -1,5 +1,6 @@
 package reserva_api.utils;
 
+import reserva_api.models.ComunicacaoInternaModel;
 import reserva_api.models.PessoaModel;
 
 import java.text.MessageFormat;
@@ -24,6 +25,8 @@ public class  MensagemEmailUtil {
                         pessoa.getNome(), pessoa.getEmail(), pessoa.getCodigoAtivacao());
     }
 
-    // fazer um para solicitação de transporte (envio para o ADMIN)
-
+    public static String solicitacaoComunicacaoInterna(ComunicacaoInternaModel comunicacoInterna) {
+        return
+                "<h2>Ola, Admin!</h2><p>Você tem uma nova solicitação via Comunicação Interna no <strong>Sistema GPMM</strong>:</p><p>Nome do usuário: "+comunicacoInterna.getPessoa().getNome()+"</p><p>Mensagem:</p><h3>"+comunicacoInterna.getMensagem()+"</h3></br><p>Para responde-lo, clique no e-mail a seguir: <strong><a href='mailto:"+comunicacoInterna.getPessoa().getEmail()+"?subject=RE: "+comunicacoInterna.getAssunto()+"'>"+comunicacoInterna.getPessoa().getEmail()+"</a></strong></p><p>Atenciosamente,</p><p><strong>Equipe do Sistema GPMM</strong></p>";
+    }
 }

@@ -1,25 +1,26 @@
 package reserva_api.dtos;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import reserva_api.models.PessoaModel;
 
 @Data
-public class EmailDto {
-    @NotBlank
-    private PessoaModel pessoa;
-    @NotBlank
+public class ComunicacaoInternaDto {
+    @NotBlank(message = "O campo Pessoa Id é obrigatório")
+    private Long pessoaId;
+
+    @NotBlank(message = "O campo Assunto é obrigatório")
     private String assunto;
-    @NotBlank
+
+    @NotBlank(message = "O campo Mensagem é obrigatório")
     private String mensagem;
 
-    public PessoaModel getPessoa() {
-        return pessoa;
+
+    public Long getPessoaId() {
+        return pessoaId;
     }
 
-    public void setPessoa(PessoaModel pessoa) {
-        this.pessoa = pessoa;
+    public void setPessoaId(Long pessoaId) {
+        this.pessoaId = pessoaId;
     }
 
     public String getAssunto() {

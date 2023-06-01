@@ -1,5 +1,6 @@
 package reserva_api.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 import reserva_api.models.enums.StatusEmail;
@@ -9,22 +10,31 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name="email")
-public class EmailModel implements Serializable {
+@Table(name="comunicacao_interna")
+public class ComunicacaoInternaModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String assunto;
+
     @Column(columnDefinition = "TEXT")
     protected String mensagem;
-    private LocalDateTime dataEmail;
-    private StatusEmail statusEmail;
 
-    @ManyToOne
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    private LocalDateTime dataEnvio;
+
+    private StatusEmail status;
+
+    @OneToOne
     @JoinColumn(name = "pessoa_id")
     private PessoaModel pessoa;
+
+    public ComunicacaoInternaModel() {
+        this.dataEnvio =  LocalDateTime.now();
+    }
 
     public Long getId() {
         return id;
@@ -50,20 +60,20 @@ public class EmailModel implements Serializable {
         this.mensagem = mensagem;
     }
 
-    public LocalDateTime getDataEmail() {
-        return dataEmail;
+    public LocalDateTime getDataEnvio() {
+        return dataEnvio;
     }
 
-    public void setDataEmail(LocalDateTime dataEmail) {
-        this.dataEmail = dataEmail;
+    public void setDataEnvio(LocalDateTime dataEnvio) {
+        this.dataEnvio = dataEnvio;
     }
 
-    public StatusEmail getStatusEmail() {
-        return statusEmail;
+    public StatusEmail getStatus() {
+        return status;
     }
 
-    public void setStatusEmail(StatusEmail statusEmail) {
-        this.statusEmail = statusEmail;
+    public void setStatus(StatusEmail status) {
+        this.status = status;
     }
 
     public PessoaModel getPessoa() {
