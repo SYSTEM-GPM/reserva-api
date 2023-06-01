@@ -15,7 +15,6 @@ public class EnviaEmailService {
 
     public void enviar(String destinatario, String titulo, String conteudo) throws MessagingException {
         log.info("Enviando email...");
-
         var mail = mailSender.createMimeMessage();
         var helper = new MimeMessageHelper(mail);
 

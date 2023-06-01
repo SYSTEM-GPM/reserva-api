@@ -166,4 +166,3 @@ CREATE TABLE IF NOT EXISTS `passageiro` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Exportação de dados foi desmarcado.
-
