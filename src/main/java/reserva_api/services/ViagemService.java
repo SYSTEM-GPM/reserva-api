@@ -6,11 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import reserva_api.dtos.SolicitacaoTransporteDto;
 import reserva_api.models.*;
 import reserva_api.repositories.*;
-
-import java.util.List;
 
 @Service
 public class ViagemService {

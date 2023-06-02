@@ -2,12 +2,13 @@ package reserva_api.resources;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
 import reserva_api.dtos.*;
+import reserva_api.dtos.projection.SolicitacaoLocalProjection;
 import reserva_api.models.*;
 import reserva_api.repositories.filters.RecursoFilter;
 import reserva_api.services.RecursoService;
@@ -52,6 +54,7 @@ public class SolicitacaoResource {
 		return ResponseEntity.ok().body(solicitacaoService.IsLivre(recursoFilter));
 	}
 
+	/*
 	@GetMapping("/resumo")
 	public ResponseEntity<Page<ReservaDto>> buscarReservas(RecursoFilter recursoFilter, Pageable pageable) {
 		return ResponseEntity.ok().body(solicitacaoService.todasReservaPorData(recursoFilter, pageable));
@@ -65,8 +68,9 @@ public class SolicitacaoResource {
 	@GetMapping("/resumo/transportes")
 	public ResponseEntity<Page<ReservaDto>> buscarReservasTransporte(RecursoFilter recursoFilter, Pageable pageable) {
 		return ResponseEntity.ok().body(solicitacaoService.reservaTransportePorData(recursoFilter, pageable));
-	}
+	}*/
 
+	//Lista apenas uma solicitação pelo seu id
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<Solicitacao> buscarPorId(@PathVariable Long id) {
 		Solicitacao solicitacao = solicitacaoService.buscarPorId(id);
@@ -151,9 +155,24 @@ public class SolicitacaoResource {
 
 	@GetMapping(value = "/viagens")
 	public ResponseEntity<Page<Viagem>> buscarTodasViagens(Pageable pageable) {
+
+		Sort sort = Sort.by("solicitacaoId").descending();
+		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
 		return ResponseEntity.ok().body(viagemService.buscarTodas(pageable));
 	}
 
+	@GetMapping(value = "/locais")
+	public ResponseEntity<Page<SolicitacaoLocalProjection>> buscarTodosLocais(Pageable pageable) {
+		return ResponseEntity.ok().body(solicitacaoService.buscarTodosLocais(pageable));
+	}
+
+	@GetMapping(value = "/locais/pessoa/{id}")
+	public ResponseEntity<Page<SolicitacaoLocalProjection>> buscarTodosLocaisPorPessoa(@PathVariable Long id, Pageable pageable) {
+		return ResponseEntity.ok().body(solicitacaoService.buscarTodosLocaisPorPessoa(id, pageable));
+	}
+
+	//Pesquisa por viagem que está relacionado a alguma solicitação de transporte
 	@GetMapping(value = "/viagens/{id}")
 	public ResponseEntity<Viagem> buscarPorSolicitacao(@PathVariable Long id) {
 		return ResponseEntity.ok().body(viagemService.buscarPorSolicitacao(id));
