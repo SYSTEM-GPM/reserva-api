@@ -14,6 +14,8 @@ import org.springframework.util.ObjectUtils;
 import reserva_api.dtos.ReservaDto;
 import reserva_api.dtos.SolicitacaoTransporteAtualizarDto;
 import reserva_api.dtos.SolicitacaoTransporteDto;
+import reserva_api.dtos.projection.MotoristaProjection;
+import reserva_api.dtos.projection.SolicitacaoLocalProjection;
 import reserva_api.models.*;
 import reserva_api.models.enums.StatusSolicitacao;
 import reserva_api.repositories.PessoaRepository;
@@ -34,6 +36,14 @@ public class SolicitacaoService {
 
 	@Autowired
 	private RecursoRepository recursoRepository;
+
+	public Page<SolicitacaoLocalProjection> buscarTodosLocais(Pageable pageable) {
+		return solicitacaoRepository.buscarTodosLocais(pageable);
+	}
+
+	public Page<SolicitacaoLocalProjection> buscarTodosLocaisPorPessoa(Long id, Pageable pageable) {
+		return solicitacaoRepository.buscarTodosLocaisPorPessoa(id, pageable);
+	}
 
 	public Page<Solicitacao> buscarTodas(Pageable pageable) {
 		return solicitacaoRepository.findAll(pageable);
@@ -153,4 +163,6 @@ public class SolicitacaoService {
 
 		return solicitacaoRepository.save(solicitacao);
 	}
+
+
 }

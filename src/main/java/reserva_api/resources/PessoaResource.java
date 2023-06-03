@@ -415,15 +415,15 @@ public class PessoaResource {
 		pessoaModel = pessoaService.salvar(pessoaModel);
 
 		//remover validação para caso a pessoa queria retirar cnh
-		if(pessoaDto.getNumeroCnh() != null &&
-				!pessoaDto.getNumeroCnh().isEmpty() &&
-				!pessoaDto.getNumeroCnh().isBlank()){
+//		if(pessoaDto.getNumeroCnh() != null &&
+//				!pessoaDto.getNumeroCnh().isEmpty() &&
+//				!pessoaDto.getNumeroCnh().isBlank()){
 
 			var motoristaModel = new MotoristaModel();
 			motoristaModel.setId(pessoaModel.getId());
 			motoristaModel.setNumeroCnh(pessoaDto.getNumeroCnh());
 			motoristaService.salvar(motoristaModel);
-		}
+//		}
 
 		//return ResponseEntity.status(HttpStatus.OK).body(pessoaModel);
 		return ResponseEntity

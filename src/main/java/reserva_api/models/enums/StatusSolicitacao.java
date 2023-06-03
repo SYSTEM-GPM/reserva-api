@@ -6,6 +6,7 @@ public enum StatusSolicitacao {
 	DEVOLVIDO,
 	NAOUTILIZADO,
 	RESERVADO,
-	NEGADO;
+	NEGADO,
+	AUTORIZADO;
 
 }
