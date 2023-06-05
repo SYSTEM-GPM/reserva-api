@@ -59,6 +59,10 @@ public class PessoaService {
 		return pessoaRepository.existsByEmail(email);
 	}
 
+	public boolean existsBySetorId(Long id) {
+		return pessoaRepository.existsBySetorId(id);
+	}
+
 	public Optional<PessoaModel> findById(Long id) {
 		return pessoaRepository.findById(id);
 	}
