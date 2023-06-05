@@ -7,19 +7,18 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "recurso")
 @Inheritance(strategy = InheritanceType.JOINED)
+@SQLDelete(sql = "UPDATE recurso SET deleted=true WHERE id=?")
+@Where(clause = "deleted=false")
 public class Recurso implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -28,6 +27,11 @@ public class Recurso implements Serializable {
 	private Long id;
 	@NotNull(message = "Descrição é obrigatória")
 	private String descricao;
+
+	@Column(columnDefinition = "tinyint(1) default 0")
+	@Builder.Default
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private boolean deleted = false;
 
 	@JsonIgnore
 	@ManyToMany
@@ -62,6 +66,14 @@ public class Recurso implements Serializable {
 
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 	public Set<Solicitacao> getSolicitacoes() {
