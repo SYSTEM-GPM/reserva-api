@@ -14,7 +14,6 @@ import org.springframework.util.ObjectUtils;
 import reserva_api.dtos.ReservaDto;
 import reserva_api.dtos.SolicitacaoTransporteAtualizarDto;
 import reserva_api.dtos.SolicitacaoTransporteDto;
-import reserva_api.dtos.projection.MotoristaProjection;
 import reserva_api.dtos.projection.SolicitacaoLocalProjection;
 import reserva_api.models.*;
 import reserva_api.models.enums.StatusSolicitacao;
@@ -165,4 +164,7 @@ public class SolicitacaoService {
 	}
 
 
+	public boolean existeRecurso(Recurso recurso) {
+		return solicitacaoRepository.existsByRecursos(recurso);
+	}
 }

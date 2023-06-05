@@ -2,6 +2,7 @@ package reserva_api.resources;
 
 import java.net.URI;
 
+import org.hibernate.annotations.Where;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ import reserva_api.dtos.SetorDto;
 import reserva_api.dtos.TransporteDto;
 import reserva_api.models.SetorModel;
 import reserva_api.models.TransporteModel;
+import reserva_api.services.PessoaService;
 import reserva_api.services.SetorService;
 import reserva_api.utils.ApiError;
 import reserva_api.utils.ApiSuccess;
@@ -34,6 +36,9 @@ public class SetorResource {
 
 	@Autowired
 	private SetorService setorService;
+
+	@Autowired
+	private PessoaService pessoaService;
 
 	@GetMapping
 	public ResponseEntity<Page<SetorModel>> buscarTodos(Pageable pageable) {
@@ -72,7 +77,13 @@ public class SetorResource {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> excluirPorId(@PathVariable Long id) {
+	public ResponseEntity<Object> excluirPorId(@PathVariable Long id) {
+		if (pessoaService.existsBySetorId(id)) {
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body(new ApiError("Não foi possível deletar o setor, pois ele se encontra em uso!"));
+		}
+
 		setorService.excluirPorId(id);
 		return ResponseEntity.noContent().build();
 	}

@@ -3,11 +3,17 @@ package reserva_api.models;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "setor")
+@SQLDelete(sql = "UPDATE setor SET deleted=true WHERE id=?")
+@Where(clause = "deleted=false")
 public class SetorModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -18,6 +24,11 @@ public class SetorModel implements Serializable {
 
 	@Column(nullable = false, length = 255)
 	private String nome;
+
+	@Column(columnDefinition = "tinyint(1) default 0")
+	@Builder.Default
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private boolean deleted = false;
 
 	public SetorModel() {
 
@@ -43,6 +54,14 @@ public class SetorModel implements Serializable {
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 	@Override

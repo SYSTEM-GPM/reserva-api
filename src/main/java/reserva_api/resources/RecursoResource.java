@@ -1,7 +1,5 @@
 package reserva_api.resources;
 
-import java.net.URI;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,13 +14,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
 import reserva_api.dtos.LocalDto;
 import reserva_api.dtos.TransporteDto;
 import reserva_api.models.*;
 import reserva_api.services.RecursoService;
+import reserva_api.services.SolicitacaoService;
 import reserva_api.utils.ApiError;
 import reserva_api.utils.ApiSuccess;
 
@@ -32,6 +30,9 @@ public class RecursoResource {
 
 	@Autowired
 	private RecursoService recursoService;
+
+	@Autowired
+	private SolicitacaoService solicitacaoService;
 
 	@GetMapping
 	public ResponseEntity<Page<Recurso>> buscarTodos(Pageable pageable) {
@@ -45,7 +46,14 @@ public class RecursoResource {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> excluirPorId(@PathVariable Long id) {
+	public ResponseEntity<Object> excluirPorId(@PathVariable Long id) {
+		var recurso = recursoService.buscarPorId(id);
+		if(solicitacaoService.existeRecurso(recurso)) {
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body(new ApiError("Não foi possível deletar o recurso, pois ele se encontra em uso!"));
+		}
+
 		recursoService.excluirPorId(id);
 		return ResponseEntity.noContent().build();
 	}

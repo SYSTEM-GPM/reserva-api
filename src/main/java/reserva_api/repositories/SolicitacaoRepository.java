@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import reserva_api.dtos.projection.MotoristaProjection;
 import reserva_api.dtos.projection.SolicitacaoLocalProjection;
 import reserva_api.models.PessoaModel;
+import reserva_api.models.Recurso;
 import reserva_api.models.Solicitacao;
 import reserva_api.repositories.solicitacao.SolicitacaoRepositoryQuery;
 
@@ -24,4 +25,6 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long>,
 
 	@Query(value = "SELECT s.id AS solicitacao_id, s.data_final, s.data_inicio, s.data_solicitacao, s.finalidade, s.externo, s.autorizacao, r.id AS local_id, r.descricao AS local, l.identificacao, l.total_de_assento, p.id AS solicitante_id, p.nome AS solicitante, p.cpf, p.siape, p.numero AS telefone FROM solicitacao s JOIN pessoa p ON s.solicitante_id = p.id JOIN solicitacao_recurso sr ON s.id = sr.solicitacao_id JOIN recurso r ON sr.recurso_id = r.id JOIN local l ON r.id = l.id WHERE p.id = ?1 ORDER BY s.data_solicitacao DESC", nativeQuery = true)
 	Page<SolicitacaoLocalProjection> buscarTodosLocaisPorPessoa(Long id, Pageable pageable);
+
+	boolean existsByRecursos(Recurso recurso);
 }

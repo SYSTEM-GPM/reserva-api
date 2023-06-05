@@ -18,4 +18,6 @@ public interface PessoaRepository extends JpaRepository<PessoaModel, Long>, Pess
     boolean existsByEmail(String email);
 
     Optional<PessoaModel> findByEmail(String email);
+
+    boolean existsBySetorId(Long id);
 }
