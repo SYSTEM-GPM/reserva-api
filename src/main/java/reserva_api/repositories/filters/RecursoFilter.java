@@ -4,11 +4,14 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import org.springframework.format.annotation.DateTimeFormat;
 import reserva_api.models.enums.StatusSolicitacao;
 
 public class RecursoFilter {
 	private Long idRecurso;
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private LocalDateTime dataInicio;
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private LocalDateTime dataFinal;
 	private String externo;
 	@Enumerated(EnumType.STRING)

@@ -2,9 +2,11 @@ package reserva_api.resources.exceptions;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.regex.Pattern;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -101,7 +105,7 @@ public class ResourceExceptionHandler {
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<StandardError> runtimeException(RuntimeException e, HttpServletRequest resquest) {
 		List<String> errors = Arrays
-				.asList("ERRO DO SERVIDOR");
+				.asList("Erro do servidor");
 		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 		StandardError err = new StandardError(Instant.now(), status.value(), errors, e.getMessage(),
 				resquest.getRequestURI());
@@ -111,8 +115,18 @@ public class ResourceExceptionHandler {
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<StandardError> dataIntegrityViolationException(DataIntegrityViolationException e, HttpServletRequest resquest) {
 		List<String> errors = Arrays
-				.asList("Não foi possível excluir");
+				.asList("Operação SQL não permitida!");
 		HttpStatus status = HttpStatus.CONFLICT;
+		StandardError err = new StandardError(Instant.now(), status.value(), errors, e.getMessage(),
+				resquest.getRequestURI());
+		return ResponseEntity.status(status).body(err);
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<Object> methodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest resquest) {
+		List<String> errors = new ArrayList();
+		e.getAllErrors().forEach(er -> errors.add("["+er.getCodes()[1].split(Pattern.quote("."))[1] +"] " + er.getDefaultMessage()));
+		HttpStatus status = HttpStatus.BAD_REQUEST;
 		StandardError err = new StandardError(Instant.now(), status.value(), errors, e.getMessage(),
 				resquest.getRequestURI());
 		return ResponseEntity.status(status).body(err);
