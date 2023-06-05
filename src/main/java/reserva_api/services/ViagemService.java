@@ -3,11 +3,14 @@ package reserva_api.services;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import reserva_api.models.*;
 import reserva_api.repositories.*;
+
+import java.util.*;
 
 @Service
 public class ViagemService {
@@ -37,6 +40,43 @@ public class ViagemService {
 	public Viagem buscarPorSolicitacao(Long id) {
 		Solicitacao solicitacao = solicitacaoRepository.findById(id).orElseThrow();
 		return viagemRepository.findBySolicitacao(solicitacao).orElseThrow();
+	}
+
+	public Page<Viagem> buscarPorPessoas(Long id, Pageable pageable) {
+		//Verifica se pessoa existe
+		PessoaModel pessoa = pessoaRepository.findById(id).orElseThrow();
+		//resgata todas as solicitacoes da pessoa
+		List<Solicitacao> solicitacoes = solicitacaoRepository.findBySolicitante(pessoa).orElseThrow();
+
+		List<Viagem> solicitacoesViagem = new ArrayList<>();
+
+		// Buscar as solicitações contidas na tabela de viagem
+		for (Solicitacao solicitacao : solicitacoes) {
+			Optional<Viagem> solicitacaoViagem = viagemRepository.findBySolicitacao(solicitacao);
+			solicitacaoViagem.ifPresent(solicitacoesViagem::add);
+		}
+
+		int pageSize = pageable.getPageSize();
+		int currentPage = pageable.getPageNumber();
+		int startItem = currentPage * pageSize;
+		List<Viagem> pageViagens;
+
+		if (solicitacoesViagem.size() < startItem) {
+			pageViagens = Collections.emptyList();
+		} else {
+			int toIndex = Math.min(startItem + pageSize, solicitacoesViagem.size());
+			pageViagens = solicitacoesViagem.subList(startItem, toIndex);
+		}
+
+		Page<Viagem> page = new PageImpl<>(pageViagens, pageable, solicitacoesViagem.size());
+
+		if (page.isEmpty()) {
+			// Não há viagens disponíveis
+			// Você pode lançar uma exceção, retornar um ResponseEntity com status adequado ou retornar uma mensagem personalizada
+			throw new NoSuchElementException("Nenhuma solicitação realizada");
+		}
+
+		return page;
 	}
 
 	public Viagem salvar(Viagem viagem) {
