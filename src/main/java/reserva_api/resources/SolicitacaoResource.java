@@ -174,12 +174,8 @@ public class SolicitacaoResource {
 
 	//Pesquisa por viagem que está relacionado a alguma solicitação de transporte
 	@GetMapping(value = "/viagens/{id}")
-	public ResponseEntity<Page<Viagem>> buscarPorPessoas(@PathVariable Long id, Pageable pageable) {
-
-		Sort sort = Sort.by("solicitacaoId").descending();
-		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-
-		return ResponseEntity.ok().body(viagemService.buscarPorPessoas(id, pageable));
+	public ResponseEntity<Object> buscarPorPessoas(@PathVariable Long id) {
+		return ResponseEntity.ok().body(viagemService.buscarPorId(id));
 	}
 
 

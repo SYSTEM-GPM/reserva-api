@@ -7,12 +7,18 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import reserva_api.models.enums.TipoPerfil;
 
 @Entity
 @Table(name = "motorista")
+@SQLDelete(sql = "UPDATE motorista SET deleted=true WHERE id=?")
+@Where(clause = "deleted=false")
 public class MotoristaModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -26,6 +32,11 @@ public class MotoristaModel implements Serializable {
 	@JsonIgnore
 	@OneToMany(mappedBy = "motorista")
 	private Set<Viagem> viagens = new HashSet<>();
+
+	@Column(columnDefinition = "tinyint(1) default 0")
+	@Builder.Default
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private boolean deleted = false;
 
 	public MotoristaModel() {
 		super();
@@ -58,5 +69,13 @@ public class MotoristaModel implements Serializable {
 
 	public void setViagens(Set<Viagem> viagens) {
 		this.viagens = viagens;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 }

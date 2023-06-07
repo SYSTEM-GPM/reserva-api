@@ -36,4 +36,8 @@ public class MotoristaService {
         return motoristaRepository.findById(id);
     }
 
+    public void excluirPorId(Long id) {
+        motoristaRepository.deleteById(id);
+    }
+
 }

@@ -106,4 +106,7 @@ public class ViagemService {
 	public PassageirosModel salvarPassageiros(PassageirosModel passageiro) {
 		return passageirosRepository.save(passageiro);
 	}
+
+	public boolean existeMotorista(MotoristaModel motorista) { return viagemRepository.existsByMotorista(motorista); }
+
 }
