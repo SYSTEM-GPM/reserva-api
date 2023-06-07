@@ -20,6 +20,7 @@ import reserva_api.models.enums.StatusConta;
 import reserva_api.models.enums.TipoPerfil;
 import reserva_api.models.enums.TipoTelefone;
 import reserva_api.repositories.filters.PessoaFilter;
+import reserva_api.services.ViagemService;
 import reserva_api.utils.ApiError;
 import reserva_api.utils.ApiSuccess;
 import reserva_api.services.EnviaEmailService;
@@ -39,6 +40,9 @@ public class PessoaResource {
 
 	@Autowired
 	private EnviaEmailService enviaEmailService;
+
+	@Autowired
+	private ViagemService viagemService;
 
 	@Autowired
 	private PasswordEncoder encoder;
@@ -419,10 +423,22 @@ public class PessoaResource {
 //				!pessoaDto.getNumeroCnh().isEmpty() &&
 //				!pessoaDto.getNumeroCnh().isBlank()){
 
+		if (pessoaDto.getNumeroCnh() != null && pessoaDto.getNumeroCnh().isEmpty()) {
+			var motorista = motoristaService.findById(pessoaModel.getId()).get();
+
+			if (viagemService.existeMotorista(motorista)) {
+				return ResponseEntity
+						.status(HttpStatus.BAD_REQUEST)
+						.body(new ApiError("Não foi possível remover o motorista, pois ele se encontra em uso!"));
+			}
+
+			motoristaService.excluirPorId(pessoaModel.getId());
+		} else {
 			var motoristaModel = new MotoristaModel();
 			motoristaModel.setId(pessoaModel.getId());
 			motoristaModel.setNumeroCnh(pessoaDto.getNumeroCnh());
 			motoristaService.salvar(motoristaModel);
+		}
 //		}
 
 		//return ResponseEntity.status(HttpStatus.OK).body(pessoaModel);
