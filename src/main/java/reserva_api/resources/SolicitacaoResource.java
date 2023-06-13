@@ -174,10 +174,9 @@ public class SolicitacaoResource {
 
 	//Pesquisa por viagem que está relacionado a alguma solicitação de transporte
 	@GetMapping(value = "/viagens/{id}")
-	public ResponseEntity<Object> buscarPorPessoas(@PathVariable Long id) {
-		return ResponseEntity.ok().body(viagemService.buscarPorId(id));
+	public ResponseEntity<Page<Viagem>> buscarPorPessoas(@PathVariable Long id, Pageable pageable) {
+		return ResponseEntity.ok().body(viagemService.buscarPorPessoas(id, pageable));
 	}
-
 
 	@PostMapping(value = "/viagens")
 	public ResponseEntity<Viagem> salvarViagem(@Valid @RequestBody Viagem viagem) {
