@@ -1,15 +1,13 @@
 package reserva_api.resources;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
 import jakarta.mail.MessagingException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -59,9 +57,21 @@ public class PessoaResource {
 	//visualizar pessoas
 	@GetMapping
 	public ResponseEntity<Page<PessoaModel>> buscarTodos(Pageable pageable) {
+
+		//ordena pelo id mais recente adicionado
 		Sort sort = Sort.by("id").descending();
 		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-		return ResponseEntity.ok().body(pessoaService.buscarTodos(pageable));
+
+		//busca todos os usuarios cadastrados
+		Page<PessoaModel> page = pessoaService.buscarTodos(pageable);
+
+		//remove os motoristas da lista de exibiçao, pois estao com demais campos vazios
+		List<PessoaModel> filteredList = pessoaService.filtrarUsuarios(page.getContent());
+		//coonverte a lista em paginação novamente
+		Page<PessoaModel> filteredPage = new PageImpl<>(filteredList, pageable, page.getTotalElements());
+
+		//retorna resultado
+		return ResponseEntity.ok().body(filteredPage);
 	}
 
 	@GetMapping("/resumo")
