@@ -1,11 +1,12 @@
 package reserva_api.services;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,11 +38,59 @@ public class SolicitacaoService {
 	private RecursoRepository recursoRepository;
 
 	public Page<SolicitacaoLocalProjection> buscarTodosLocais(Pageable pageable) {
-		return solicitacaoRepository.buscarTodosLocais(pageable);
+
+		//resgata todas as solicitacoes
+		List<SolicitacaoLocalProjection> solicitacaoGeral = solicitacaoRepository.buscarTodosLocais();
+
+		int pageSize = pageable.getPageSize();
+		int currentPage = pageable.getPageNumber();
+		int startItem = currentPage * pageSize;
+		List<SolicitacaoLocalProjection> pageSolicitacao;
+
+		if (solicitacaoGeral.size() < startItem) {
+			pageSolicitacao = Collections.emptyList();
+		} else {
+			int toIndex = Math.min(startItem + pageSize, solicitacaoGeral.size());
+			pageSolicitacao = solicitacaoGeral.subList(startItem, toIndex);
+		}
+
+		Page<SolicitacaoLocalProjection> page = new PageImpl<>(pageSolicitacao, pageable, solicitacaoGeral.size());
+
+		if (page.isEmpty()) {
+			// Não há viagens disponíveis
+			// Você pode lançar uma exceção, retornar um ResponseEntity com status adequado ou retornar uma mensagem personalizada
+			throw new NoSuchElementException("Sem registros");
+		}
+
+		return page;
 	}
 
 	public Page<SolicitacaoLocalProjection> buscarTodosLocaisPorPessoa(Long id, Pageable pageable) {
-		return solicitacaoRepository.buscarTodosLocaisPorPessoa(id, pageable);
+
+		//resgata todas as solicitacoes
+		List<SolicitacaoLocalProjection> solicitacaoGeral = solicitacaoRepository.buscarTodosLocaisPorPessoa(id);
+
+		int pageSize = pageable.getPageSize();
+		int currentPage = pageable.getPageNumber();
+		int startItem = currentPage * pageSize;
+		List<SolicitacaoLocalProjection> pageSolicitacao;
+
+		if (solicitacaoGeral.size() < startItem) {
+			pageSolicitacao = Collections.emptyList();
+		} else {
+			int toIndex = Math.min(startItem + pageSize, solicitacaoGeral.size());
+			pageSolicitacao = solicitacaoGeral.subList(startItem, toIndex);
+		}
+
+		Page<SolicitacaoLocalProjection> page = new PageImpl<>(pageSolicitacao, pageable, solicitacaoGeral.size());
+
+		if (page.isEmpty()) {
+			// Não há viagens disponíveis
+			// Você pode lançar uma exceção, retornar um ResponseEntity com status adequado ou retornar uma mensagem personalizada
+			throw new NoSuchElementException("Sem registros");
+		}
+
+		return page;
 	}
 
 	public Page<Solicitacao> buscarTodas(Pageable pageable) {
