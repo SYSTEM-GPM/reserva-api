@@ -56,6 +56,13 @@ public class ViagemService {
 			solicitacaoViagem.ifPresent(solicitacoesViagem::add);
 		}
 
+		Collections.sort(solicitacoesViagem, new Comparator<Viagem>() {
+			@Override
+			public int compare(Viagem v1, Viagem v2) {
+				return v2.getSolicitacao().getDataSolicitacao().compareTo(v1.getSolicitacao().getDataSolicitacao());
+			}
+		});
+
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;
