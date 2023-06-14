@@ -14,6 +14,8 @@ import reserva_api.repositories.PessoaRepository;
 import reserva_api.repositories.filters.PessoaFilter;
 
 import javax.swing.text.html.Option;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,6 +26,18 @@ public class PessoaService {
 
 	public Page<PessoaModel> buscarTodos(Pageable pageable) {
 		return pessoaRepository.findAll(pageable);
+	}
+
+	public List<PessoaModel> filtrarUsuarios(List<PessoaModel> listaUsuarios) {
+		List<PessoaModel> filteredList = new ArrayList<>();
+
+		for (PessoaModel usuario : listaUsuarios) {
+			if (usuario.getStatus() != null) {
+				filteredList.add(usuario);
+			}
+		}
+
+		return filteredList;
 	}
 
 	public Page<PessoaDto> filtarTodas(PessoaFilter pessoaFilter,Pageable pageable) {
