@@ -34,6 +34,11 @@ public class MotoristaResource {
         return ResponseEntity.ok().body(motoristaService.buscarTodosMotoristas(pageable));
     }
 
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Object> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok().body(motoristaService.buscarPorId(id));
+    }
+
     //cadastrando motorista
     @PostMapping
     public ResponseEntity<Object> salvar(@RequestBody @Valid MotoristaDto motoristaDto) {

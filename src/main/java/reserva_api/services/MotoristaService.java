@@ -69,4 +69,8 @@ public class MotoristaService {
         motoristaRepository.deleteById(id);
     }
 
+    public MotoristaProjection buscarPorId(Long id) {
+        return motoristaRepository.buscaPorId(id).orElseThrow();
+
+    }
 }
