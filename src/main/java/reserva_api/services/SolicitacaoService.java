@@ -84,12 +84,6 @@ public class SolicitacaoService {
 
 		Page<SolicitacaoLocalProjection> page = new PageImpl<>(pageSolicitacao, pageable, solicitacaoGeral.size());
 
-		if (page.isEmpty()) {
-			// Não há viagens disponíveis
-			// Você pode lançar uma exceção, retornar um ResponseEntity com status adequado ou retornar uma mensagem personalizada
-			throw new NoSuchElementException("Sem registros");
-		}
-
 		return page;
 	}
 
