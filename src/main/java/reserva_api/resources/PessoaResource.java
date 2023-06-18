@@ -48,9 +48,6 @@ public class PessoaResource {
 	@Autowired
 	private PasswordEncoder encoder;
 
-
-	private String adminEmail = "josilenevitoriasilva@gmail.com";
-
 	private String geraNumeroAleatorio() {
 		Random rnd = new Random();
 		int number = rnd.nextInt(999999);
@@ -207,7 +204,7 @@ public class PessoaResource {
 
 		var pessoaModel = pessoa.get();
 
-		if (pessoaModel.getCodigoAtivacao() == null || !pessoaModel.getCodigoAtivacao().equals(criarSenhaDto.getCodigo())) {
+		if (criarSenhaDto.getCodigo() != null && (pessoaModel.getCodigoAtivacao() == null || !pessoaModel.getCodigoAtivacao().equals(criarSenhaDto.getCodigo()))) {
 			return ResponseEntity
 					.status(HttpStatus.BAD_REQUEST)
 					.body(new ApiError( "Código de ativação inválido!"));

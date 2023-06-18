@@ -9,7 +9,7 @@ public class CriarSenhaDto {
     @Size(min = 8, max = 50)
     private String senha;
 
-    @NotBlank(message = "O campo Codigo de ativação é obrigatório")
+//    @NotBlank(message = "O campo Codigo de ativação é obrigatório")
     @Size(min = 0, max = 6)
     private String codigo;
 
