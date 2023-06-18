@@ -1,14 +1,19 @@
 package reserva_api.resources;
 
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reserva_api.dtos.ComunicacaoInternaDto;
 import reserva_api.models.ComunicacaoInternaModel;
 import reserva_api.models.enums.StatusEmail;
+import reserva_api.models.enums.TipoPerfil;
 import reserva_api.services.ComunicacaoInternaService;
 import reserva_api.services.EnviaEmailService;
 import reserva_api.services.PessoaService;
@@ -59,8 +64,23 @@ public class ComunicacaoInternaResource {
     }
 
     @GetMapping
-    public List<ComunicacaoInternaModel> buscarTodas() {
-        return comunicacaoInternaService.buscarTodos();
+    public Object buscarTodas(Pageable pageable, HttpServletRequest request) {
+        var emailPessoaLogada = request.getUserPrincipal().getName();
+        var pessoa = pessoaService.buscarPorEmail(emailPessoaLogada);
+        var pessoaModel = pessoa.get();
+
+        System.out.println("Tipo de perfil do usuário: " + pessoaModel.getTipoPerfil());
+
+        Sort sort = Sort.by("solicitacaoId").descending();
+
+        if (pessoaModel.getTipoPerfil() == TipoPerfil.ADMIN) {
+            return comunicacaoInternaService.buscarTodos(pageable);
+        }
+
+        return comunicacaoInternaService.buscarTodos(pageable);
+
+
+//        return comunicacaoInternaService.buscarPorPessoa(pessoaModel, pageable);
     }
 
 }
