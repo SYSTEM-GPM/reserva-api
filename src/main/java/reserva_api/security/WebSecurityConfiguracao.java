@@ -44,7 +44,7 @@ public class WebSecurityConfiguracao {
                 .and()
                 .authorizeRequests()
                 .requestMatchers(HttpMethod.POST,
-                        "/login", "/pessoas/envia-codigo/**", "/pessoas/valida-codigo","/pessoas/auto"
+                        "/login", "/pessoas/envia-codigo/**", "/pessoas/valida-codigo","/pessoas/auto", "/pessoas/auto/envio-emails"
                 ).permitAll()
                 .requestMatchers(HttpMethod.PUT, "/pessoas/{id}/senha").permitAll()
                 .requestMatchers(HttpMethod.GET,

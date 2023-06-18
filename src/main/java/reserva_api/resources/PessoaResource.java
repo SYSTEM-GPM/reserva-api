@@ -26,6 +26,7 @@ import reserva_api.utils.ApiSuccess;
 import reserva_api.services.EnviaEmailService;
 import reserva_api.services.MotoristaService;
 import reserva_api.services.PessoaService;
+import reserva_api.utils.Constantes;
 import reserva_api.utils.MensagemEmailUtil;
 
 @RestController
@@ -46,6 +47,9 @@ public class PessoaResource {
 
 	@Autowired
 	private PasswordEncoder encoder;
+
+
+	private String adminEmail = "josilenevitoriasilva@gmail.com";
 
 	private String geraNumeroAleatorio() {
 		Random rnd = new Random();
@@ -233,13 +237,13 @@ public class PessoaResource {
 		if (pessoaModel.getStatus() == statusDto.getStatus()) {
 			return ResponseEntity
 					.status(HttpStatus.BAD_REQUEST)
-					.body(new ApiError( "Status fornecido é igual ao atual!"));
+					.body(new ApiError("Status fornecido não pode ser igual ao atual!"));
 		}
 
 		if (pessoaModel.getStatus() == StatusConta.PENDENTE_ATIVACAO_USUARIO) {
 			return ResponseEntity
 					.status(HttpStatus.BAD_REQUEST)
-					.body(new ApiError( "Conta pendente de ativação pelo usuário!"));
+					.body(new ApiError("Conta pendente de ativação pelo usuário!"));
 		}
 
 		// caso de usuários antigos sem e-mail
@@ -247,14 +251,33 @@ public class PessoaResource {
 				(pessoaModel.getEmail() == null || pessoaModel.getEmail().isEmpty())) {
 			return ResponseEntity
 					.status(HttpStatus.BAD_REQUEST)
-					.body(new ApiError( "Usuário não pode ser ativado sem um e-mail cadastrado!"));
+					.body(new ApiError("Usuário não pode ser ativado sem um e-mail cadastrado!"));
 		}
 
 		pessoaModel.setStatus(statusDto.getStatus());
 
 		pessoaService.salvar(pessoaModel);
 
-		return ResponseEntity.status(HttpStatus.OK).body(new ApiSuccess("Staus mudado com sucesso!"));
+		return ResponseEntity.status(HttpStatus.OK).body(new ApiSuccess("Status atualizado com sucesso!"));
+	}
+
+	@PostMapping(value = "/status/envio-email")
+	public ResponseEntity<Object> enviarEmailAtualizacaoStatus(@RequestBody @Valid EnviaEmailsUpdateStatusDto enviaEmailsUpdateStatusDto) throws MessagingException {
+		var pessoa = pessoaService.buscarPorId(enviaEmailsUpdateStatusDto.getId());
+
+		if (pessoa.isEmpty()){
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiError("E-mails não encontrado!"));
+		}
+
+		var pessoaModel = pessoa.get();
+
+		enviaEmailService.enviar(
+				pessoaModel.getEmail(),
+				"Atualização de status - Sistema GPMM",
+				MensagemEmailUtil.envioUpdateStatus(pessoaModel)
+		);
+
+		return ResponseEntity.status(HttpStatus.OK).body(new ApiSuccess("E-mail enviado!"));
 	}
 
 	@GetMapping(value = "/{id}")
@@ -347,7 +370,7 @@ public class PessoaResource {
 	}
 
 	@PostMapping(value = "/auto")
-	public ResponseEntity<Object> salvarNormal(@RequestBody @Valid CadastroUsuarioDto cadastroUsuarioDto) {
+	public ResponseEntity<Object> salvarNormal(@RequestBody @Valid CadastroUsuarioDto cadastroUsuarioDto) throws MessagingException {
 		cadastroUsuarioDto.setCpf(cadastroUsuarioDto.getCpf().replaceAll("[^0-9]", ""));
 		cadastroUsuarioDto.setTelefone(cadastroUsuarioDto.getTelefone().replaceAll("[^0-9]", ""));
 		cadastroUsuarioDto.setSiape(cadastroUsuarioDto.getSiape().replaceAll("[^0-9]", ""));
@@ -390,6 +413,36 @@ public class PessoaResource {
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(new ApiSuccess("Cadastro realizado com sucesso!"));
 	}
+
+	@PostMapping(value = "/auto/envio-emails")
+	public ResponseEntity<Object> enviarEmailAutoCadastro(@RequestBody @Valid EnviaEmailsAutoCadastroDto enviaEmailsAutoCadastroDto) throws MessagingException {
+		var pessoa = pessoaService.buscarPorEmail(enviaEmailsAutoCadastroDto.getEmail());
+
+		if (pessoa.isEmpty()){
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiError("E-mails não encontrado!"));
+		}
+
+		var pessoaModel = pessoa.get();
+
+		if (pessoaModel.getStatus() != StatusConta.PENDENTE_ATIVACAO_ADMIN) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiError("Operação não permitida!"));
+		}
+
+		enviaEmailService.enviar(
+				pessoaModel.getEmail(),
+				"Cadastro - Sistema GPMM",
+				MensagemEmailUtil.usuarioAutoCadastrado(pessoaModel)
+		);
+
+		enviaEmailService.enviar(
+				Constantes.adminEmail,  // e-mail do admin
+				"Solicitação de cadastro - Sistema GPMM",
+				MensagemEmailUtil.pedidoAutoCadastro(pessoaModel)
+		);
+
+		return ResponseEntity.status(HttpStatus.OK).body(new ApiSuccess("E-mails enviados!"));
+	}
+
 
 	//atualizando pessoas
 	@PutMapping("/{id}")
