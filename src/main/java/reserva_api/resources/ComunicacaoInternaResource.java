@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -71,16 +72,14 @@ public class ComunicacaoInternaResource {
 
         System.out.println("Tipo de perfil do usuário: " + pessoaModel.getTipoPerfil());
 
-        Sort sort = Sort.by("solicitacaoId").descending();
+        Sort sort = Sort.by("id").descending();
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
         if (pessoaModel.getTipoPerfil() == TipoPerfil.ADMIN) {
-            return comunicacaoInternaService.buscarTodos(pageable);
+            return ResponseEntity.ok().body(comunicacaoInternaService.buscarTodos(pageable));
         }
 
-        return comunicacaoInternaService.buscarTodos(pageable);
-
-
-//        return comunicacaoInternaService.buscarPorPessoa(pessoaModel, pageable);
+        return ResponseEntity.ok().body(comunicacaoInternaService.buscarPorPessoa(pessoaModel, pageable));
     }
 
 }
