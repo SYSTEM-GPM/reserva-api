@@ -3,6 +3,7 @@ package reserva_api.resources;
 import java.net.URI;
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,7 +26,9 @@ import jakarta.validation.Valid;
 import reserva_api.dtos.*;
 import reserva_api.dtos.projection.SolicitacaoLocalProjection;
 import reserva_api.models.*;
+import reserva_api.models.enums.TipoPerfil;
 import reserva_api.repositories.filters.RecursoFilter;
+import reserva_api.services.PessoaService;
 import reserva_api.services.RecursoService;
 import reserva_api.services.SolicitacaoService;
 import reserva_api.services.ViagemService;
@@ -43,6 +46,9 @@ public class SolicitacaoResource {
 
 	@Autowired
 	private RecursoService recursoService;
+
+	@Autowired
+	private PessoaService pessoaService;
 
 	@GetMapping
 	public ResponseEntity<Page<Solicitacao>> buscarTodas(Pageable pageable) {
@@ -154,28 +160,44 @@ public class SolicitacaoResource {
 	}
 
 	@GetMapping(value = "/viagens")
-	public ResponseEntity<Page<Viagem>> buscarTodasViagens(Pageable pageable) {
+	public ResponseEntity<Page<Viagem>> buscarTodasViagens(Pageable pageable, HttpServletRequest request) {
+		var emailPessoaLogada = request.getUserPrincipal().getName();
+		var pessoa = pessoaService.buscarPorEmail(emailPessoaLogada);
+		var pessoaModel = pessoa.get();
+
+		System.out.println("Tipo de perfil do usuário: " + pessoaModel.getTipoPerfil());
 
 		Sort sort = Sort.by("solicitacaoId").descending();
 		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
-		return ResponseEntity.ok().body(viagemService.buscarTodas(pageable));
+		if (pessoaModel.getTipoPerfil() == TipoPerfil.ADMIN) {
+			return ResponseEntity.ok().body(viagemService.buscarTodas(pageable));
+		}
+
+		return ResponseEntity.ok().body(viagemService.buscarPorPessoas(pessoaModel.getId(), pageable));
 	}
 
 	@GetMapping(value = "/locais")
-	public ResponseEntity<Page<SolicitacaoLocalProjection>> buscarTodosLocais(Pageable pageable) {
-		return ResponseEntity.ok().body(solicitacaoService.buscarTodosLocais(pageable));
+	public ResponseEntity<Page<SolicitacaoLocalProjection>> buscarTodosLocais(Pageable pageable, HttpServletRequest request) {
+		var emailPessoaLogada = request.getUserPrincipal().getName();
+		var pessoa = pessoaService.buscarPorEmail(emailPessoaLogada);
+		var pessoaModel = pessoa.get();
+
+		System.out.println("Tipo de perfil do usuário: " + pessoaModel.getTipoPerfil());
+
+		Sort sort = Sort.by("solicitacao_id").descending();
+		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+		if (pessoaModel.getTipoPerfil() == TipoPerfil.ADMIN) {
+			return ResponseEntity.ok().body(solicitacaoService.buscarTodosLocais(pageable));
+		}
+
+		return ResponseEntity.ok().body(solicitacaoService.buscarTodosLocaisPorPessoa(pessoaModel.getId(), pageable));
 	}
 
-	@GetMapping(value = "/locais/pessoa/{id}")
-	public ResponseEntity<Page<SolicitacaoLocalProjection>> buscarTodosLocaisPorPessoa(@PathVariable Long id, Pageable pageable) {
-		return ResponseEntity.ok().body(solicitacaoService.buscarTodosLocaisPorPessoa(id, pageable));
-	}
-
-	//Pesquisa por viagem que está relacionado a alguma solicitação de transporte
 	@GetMapping(value = "/viagens/{id}")
-	public ResponseEntity<Page<Viagem>> buscarPorPessoas(@PathVariable Long id, Pageable pageable) {
-		return ResponseEntity.ok().body(viagemService.buscarPorPessoas(id, pageable));
+	public ResponseEntity<Object> buscarPorSolicitacaoTransporte(@PathVariable Long id) {
+		return ResponseEntity.ok().body(viagemService.buscarPorSolicitacao(id));
 	}
 
 	@PostMapping(value = "/viagens")

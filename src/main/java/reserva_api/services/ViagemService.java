@@ -77,11 +77,6 @@ public class ViagemService {
 
 		Page<Viagem> page = new PageImpl<>(pageViagens, pageable, solicitacoesViagem.size());
 
-		if (page.isEmpty()) {
-			// Não há viagens disponíveis
-			// Você pode lançar uma exceção, retornar um ResponseEntity com status adequado ou retornar uma mensagem personalizada
-			throw new NoSuchElementException("Nenhuma solicitação realizada");
-		}
 
 		return page;
 	}
