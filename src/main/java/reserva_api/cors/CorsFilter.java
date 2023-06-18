@@ -13,12 +13,13 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import reserva_api.utils.Constantes;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
 
-	private String originPermitida = "*"; // TODO: Configurar para diferentes ambientes
+	private String originPermitida = Constantes.urlFront; // TODO: Configurar para diferentes ambientes
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)

@@ -13,6 +13,7 @@ import reserva_api.services.ComunicacaoInternaService;
 import reserva_api.services.EnviaEmailService;
 import reserva_api.services.PessoaService;
 import reserva_api.utils.ApiError;
+import reserva_api.utils.Constantes;
 import reserva_api.utils.MensagemEmailUtil;
 
 import java.util.List;
@@ -45,7 +46,7 @@ public class ComunicacaoInternaResource {
         comunicacoInternaModel.setPessoa(pessoaModelOptional.get());
 
         enviaEmailService.enviar(
-                "comunicacaointernaicet@gmail.com", // e-mail da comunicacao interna
+                Constantes.adminEmail, // e-mail do admin
                 comunicacoInternaModel.getAssunto(),
                 MensagemEmailUtil.solicitacaoComunicacaoInterna(comunicacoInternaModel)
         );
