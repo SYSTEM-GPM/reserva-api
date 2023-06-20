@@ -2,16 +2,23 @@ package reserva_api.resources.exceptions;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.regex.Pattern;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -34,7 +41,7 @@ public class ResourceExceptionHandler {
 				resquest.getRequestURI());
 		return ResponseEntity.status(status).body(err);
 	}
-	
+
 	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
 	public ResponseEntity<StandardError> sQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e, HttpServletRequest resquest) {
 		List<String> errors = Arrays
@@ -44,7 +51,7 @@ public class ResourceExceptionHandler {
 				resquest.getRequestURI());
 		return ResponseEntity.status(status).body(err);
 	}
-	
+
 	@ExceptionHandler(EmptyResultDataAccessException.class)
 	public ResponseEntity<StandardError> emptyResultDataAccessException(EmptyResultDataAccessException e, HttpServletRequest resquest) {
 		List<String> errors = Arrays
@@ -54,7 +61,7 @@ public class ResourceExceptionHandler {
 				resquest.getRequestURI());
 		return ResponseEntity.status(status).body(err);
 	}
-	
+
 	@ExceptionHandler(NonFreeResourceException.class)
 	public ResponseEntity<StandardError> nonFreeResourceException(NonFreeResourceException e, HttpServletRequest resquest) {
 		List<String> errors = Arrays
@@ -64,7 +71,7 @@ public class ResourceExceptionHandler {
 				resquest.getRequestURI());
 		return ResponseEntity.status(status).body(err);
 	}
-	
+
 	@ExceptionHandler(AllPropertiesIsRequiredException.class)
 	public ResponseEntity<StandardError> allPropertiesIsRequiredException(AllPropertiesIsRequiredException e, HttpServletRequest resquest) {
 		List<String> errors = Arrays
@@ -74,13 +81,54 @@ public class ResourceExceptionHandler {
 				resquest.getRequestURI());
 		return ResponseEntity.status(status).body(err);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 
+	@ExceptionHandler(JWTVerificationException.class)
+	public ResponseEntity<StandardError> jWTVerificationException(JWTVerificationException e, HttpServletRequest resquest) {
+		List<String> errors = Arrays
+				.asList("Token inválido");
+		HttpStatus status = HttpStatus.FORBIDDEN;
+		StandardError err = new StandardError(Instant.now(), status.value(), errors, e.getMessage(),
+				resquest.getRequestURI());
+		return ResponseEntity.status(status).body(err);
+	}
+
+	@ExceptionHandler(AuthenticationException.class)
+	public ResponseEntity<StandardError> authenticationException(AuthenticationException e, HttpServletRequest resquest) {
+		List<String> errors = Arrays
+				.asList(e.getMessage());
+		HttpStatus status = HttpStatus.UNAUTHORIZED;
+		StandardError err = new StandardError(Instant.now(), status.value(), errors, e.getMessage(),
+				resquest.getRequestURI());
+		return ResponseEntity.status(status).body(err);
+	}
+
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<StandardError> runtimeException(RuntimeException e, HttpServletRequest resquest) {
+		List<String> errors = Arrays
+				.asList("Erro do servidor");
+		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+		StandardError err = new StandardError(Instant.now(), status.value(), errors, e.getMessage(),
+				resquest.getRequestURI());
+		return ResponseEntity.status(status).body(err);
+	}
+
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<StandardError> dataIntegrityViolationException(DataIntegrityViolationException e, HttpServletRequest resquest) {
+		List<String> errors = Arrays
+				.asList("Operação SQL não permitida!");
+		HttpStatus status = HttpStatus.CONFLICT;
+		StandardError err = new StandardError(Instant.now(), status.value(), errors, e.getMessage(),
+				resquest.getRequestURI());
+		return ResponseEntity.status(status).body(err);
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<Object> methodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest resquest) {
+		List<String> errors = new ArrayList();
+		e.getAllErrors().forEach(er -> errors.add("["+er.getCodes()[1].split(Pattern.quote("."))[1] +"] " + er.getDefaultMessage()));
+		HttpStatus status = HttpStatus.BAD_REQUEST;
+		StandardError err = new StandardError(Instant.now(), status.value(), errors, e.getMessage(),
+				resquest.getRequestURI());
+		return ResponseEntity.status(status).body(err);
+	}
 }

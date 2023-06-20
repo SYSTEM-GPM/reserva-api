@@ -1,21 +1,23 @@
 package reserva_api.services;
 
-import java.util.List;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import reserva_api.model.Equipamento;
-import reserva_api.model.Local;
-import reserva_api.model.Recurso;
-import reserva_api.model.Transporte;
+import reserva_api.dtos.LocalDto;
+import reserva_api.dtos.TransporteDto;
+import reserva_api.models.Equipamento;
+import reserva_api.models.LocalModel;
+import reserva_api.models.Recurso;
+import reserva_api.models.TransporteModel;
 import reserva_api.repositories.EquipamentoRepository;
 import reserva_api.repositories.LocalRepository;
 import reserva_api.repositories.RecursoRepository;
 import reserva_api.repositories.TransporteRepository;
+
+import java.util.Optional;
 
 @Service
 public class RecursoService {
@@ -44,31 +46,35 @@ public class RecursoService {
 		recursoRepository.deleteById(id);
 	}
 
-	public Page<Transporte> buscarTransportes(Pageable pageable) {
+	public Page<TransporteModel> buscarTransportes(Pageable pageable) {
 		return transporteRepository.findAll(pageable);
 	}
 
-	public Transporte salvar(Transporte transporte) {
+	public Optional<TransporteModel> buscarTransportePorId(Long id) {
+		return transporteRepository.findById(id);
+	}
+
+	public TransporteModel salvar(TransporteModel transporte) {
 		return transporteRepository.save(transporte);
 	}
 
-	public Transporte atualizar(Long id, Transporte transporte) {
-		Transporte transporteSalvo = transporteRepository.findById(id).orElseThrow();
-		BeanUtils.copyProperties(transporte, transporteSalvo, "id");
+	public TransporteModel atualizar(Long id, TransporteDto transporteDto) {
+		TransporteModel transporteSalvo = transporteRepository.findById(id).orElseThrow();
+		BeanUtils.copyProperties(transporteDto, transporteSalvo, "id");
 		return transporteRepository.save(transporteSalvo);
 	}
 
-	public Page<Local> buscarLocais(Pageable pageable) {
+	public Page<LocalModel> buscarLocais(Pageable pageable) {
 		return localRepository.findAll(pageable);
 	}
 	
-	public Local salvar(Local local) {
+	public LocalModel salvar(LocalModel local) {
 		return localRepository.save(local);
 	}
 
-	public Local atualizar(Long id, Local local) {
-		Local localSalvo = localRepository.findById(id).orElseThrow();
-		BeanUtils.copyProperties(local, localSalvo, "id");
+	public LocalModel atualizar(Long id, LocalDto localDto) {
+		LocalModel localSalvo = localRepository.findById(id).orElseThrow();
+		BeanUtils.copyProperties(localDto, localSalvo, "id");
 		return localRepository.save(localSalvo);
 	}
 
@@ -86,4 +92,6 @@ public class RecursoService {
 		return equipamentoRepository.save(equipamentoSalvo);
 	}
 
+	public boolean existsByDescricao(String descricao) {return recursoRepository.existsByDescricao(descricao);
+	}
 }

@@ -16,13 +16,13 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import reserva_api.dto.ReservaDto;
-import reserva_api.model.Equipamento;
-import reserva_api.model.Local;
-import reserva_api.model.Pessoa;
-import reserva_api.model.Recurso;
-import reserva_api.model.Solicitacao;
-import reserva_api.model.Transporte;
+import reserva_api.dtos.ReservaDto;
+import reserva_api.models.Equipamento;
+import reserva_api.models.LocalModel;
+import reserva_api.models.PessoaModel;
+import reserva_api.models.Recurso;
+import reserva_api.models.Solicitacao;
+import reserva_api.models.TransporteModel;
 import reserva_api.repositories.filters.RecursoFilter;
 
 public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuery {
@@ -36,7 +36,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		CriteriaQuery<ReservaDto> criteria = builder.createQuery(ReservaDto.class);
 		Root<Solicitacao> root = criteria.from(Solicitacao.class);
 		Join<Solicitacao, Recurso> recursoJoin = root.join("recursos");
-		Join<Solicitacao, Pessoa> pessoaJoin = root.join("solicitante");
+		Join<Solicitacao, PessoaModel> pessoaJoin = root.join("solicitante");
 
 		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, null);
 
@@ -45,7 +45,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 
 		criteria.select(builder.construct(ReservaDto.class, root.get("id"), recursoJoin.get("id"),
 				recursoJoin.get("descricao"), root.get("dataInicio"), root.get("dataFinal"), pessoaJoin.get("nome"),
-				pessoaJoin.get("telefone").get("numero"), root.get("status")));
+				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("autorizacao")));
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
 
@@ -53,7 +53,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 
 		adicionarRestricoesDePaginacao(query, pageable);
 
-		return new PageImpl<>(query.getResultList(), pageable, total(recursoFilter, null)); 
+		return new PageImpl<>(query.getResultList(), pageable, total(recursoFilter, null));
 	}
 
 	@Override
@@ -62,16 +62,16 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		CriteriaQuery<ReservaDto> criteria = builder.createQuery(ReservaDto.class);
 		Root<Solicitacao> root = criteria.from(Solicitacao.class);
 		Join<Solicitacao, Recurso> recursoJoin = root.join("recursos");
-		Join<Solicitacao, Pessoa> pessoaJoin = root.join("solicitante");
+		Join<Solicitacao, PessoaModel> pessoaJoin = root.join("solicitante");
 
-		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, Local.class);
+		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, LocalModel.class);
 
 		criteria.orderBy(builder.asc(root.get("dataInicio")));
 		criteria.distinct(true);
 
 		criteria.select(builder.construct(ReservaDto.class, root.get("id"), recursoJoin.get("id"),
 				recursoJoin.get("descricao"), root.get("dataInicio"), root.get("dataFinal"), pessoaJoin.get("nome"),
-				pessoaJoin.get("telefone").get("numero"), root.get("status")));
+				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("autorizacao")));
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
 
@@ -79,7 +79,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 
 		adicionarRestricoesDePaginacao(query, pageable);
 
-		return new PageImpl<>(query.getResultList(), pageable, total(recursoFilter, Local.class));
+		return new PageImpl<>(query.getResultList(), pageable, total(recursoFilter, LocalModel.class));
 
 	}
 
@@ -89,17 +89,17 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		CriteriaQuery<ReservaDto> criteria = builder.createQuery(ReservaDto.class);
 		Root<Solicitacao> root = criteria.from(Solicitacao.class);
 		Join<Solicitacao, Recurso> recursoJoin = root.join("recursos");
-		Join<Solicitacao, Pessoa> pessoaJoin = root.join("solicitante");
+		Join<Solicitacao, PessoaModel> pessoaJoin = root.join("solicitante");
 
 		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, Equipamento.class);
-		
+
 
 		criteria.orderBy(builder.asc(root.get("dataInicio")));
 		criteria.distinct(true);
 
 		criteria.select(builder.construct(ReservaDto.class, root.get("id"), recursoJoin.get("id"),
 				recursoJoin.get("descricao"), root.get("dataInicio"), root.get("dataFinal"), pessoaJoin.get("nome"),
-				pessoaJoin.get("telefone").get("numero"), root.get("status")));
+				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("autorizacao")));
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
 
@@ -114,23 +114,23 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		CriteriaQuery<ReservaDto> criteria = builder.createQuery(ReservaDto.class);
 		Root<Solicitacao> root = criteria.from(Solicitacao.class);
 		Join<Solicitacao, Recurso> recursoJoin = root.join("recursos");
-		Join<Solicitacao, Pessoa> pessoaJoin = root.join("solicitante");
+		Join<Solicitacao, PessoaModel> pessoaJoin = root.join("solicitante");
 
-		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, Transporte.class);
-		
+		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, TransporteModel.class);
+
 
 		criteria.orderBy(builder.asc(root.get("dataInicio")));
 		criteria.distinct(true);
 
 		criteria.select(builder.construct(ReservaDto.class, root.get("id"), recursoJoin.get("id"),
 				recursoJoin.get("descricao"), root.get("dataInicio"), root.get("dataFinal"), pessoaJoin.get("nome"),
-				pessoaJoin.get("telefone").get("numero"), root.get("status")));
+				pessoaJoin.get("telefone").get("numero"), root.get("externo"), root.get("autorizacao")));
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
 
 		TypedQuery<ReservaDto> query = manager.createQuery(criteria);
 		adicionarRestricoesDePaginacao(query, pageable);
-		return new PageImpl<>(query.getResultList(), pageable, total(recursoFilter,Transporte.class));
+		return new PageImpl<>(query.getResultList(), pageable, total(recursoFilter, TransporteModel.class));
 
 	}
 
@@ -148,7 +148,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 		CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
 		Root<Solicitacao> root = criteria.from(Solicitacao.class);
 		Join<Solicitacao, Recurso> recursoJoin = root.join("recursos");
-		
+
 		List<Predicate> predicates = criarRestricoes(recursoFilter, builder, root, recursoJoin, c);
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
@@ -158,7 +158,7 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 	}
 
 	private List<Predicate> criarRestricoes(RecursoFilter recursoFilter, CriteriaBuilder builder,
-			Root<Solicitacao> root, Join<Solicitacao, Recurso> recursoJoin, Class c) {
+											Root<Solicitacao> root, Join<Solicitacao, Recurso> recursoJoin, Class c) {
 
 		List<Predicate> predicates = new ArrayList<>();
 
@@ -166,15 +166,15 @@ public class SolicitacaoRepositoryQueryImpl implements SolicitacaoRepositoryQuer
 			predicates.add(builder.greaterThan(root.get("dataFinal"), recursoFilter.getDataInicio()));
 			predicates.add(builder.lessThan(root.get("dataInicio"), recursoFilter.getDataFinal()));
 		}
-		if (!ObjectUtils.isEmpty(recursoFilter.getStatus())) {
-			predicates.add(builder.equal(root.get("status"), recursoFilter.getStatus()));
+		if (!ObjectUtils.isEmpty(recursoFilter.getAutorizacao())) {
+			predicates.add(builder.equal(root.get("autorizacao"), recursoFilter.getAutorizacao()));
 		}
 		if (!ObjectUtils.isEmpty(recursoFilter.getIdRecurso())) {
 			predicates.add(builder.equal(recursoJoin.get("id"), recursoFilter.getIdRecurso()));
 		}
-		
+
 		if (c!=null) {
-			predicates.add(builder.equal(recursoJoin.type(), c));			
+			predicates.add(builder.equal(recursoJoin.type(), c));
 		}
 
 		return predicates;

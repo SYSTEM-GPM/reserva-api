@@ -1,11 +1,10 @@
 package reserva_api.resources;
 
-import java.net.URI;
-import java.util.List;
-
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,14 +14,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
-import reserva_api.model.Equipamento;
-import reserva_api.model.Local;
-import reserva_api.model.Recurso;
-import reserva_api.model.Transporte;
+import reserva_api.dtos.LocalDto;
+import reserva_api.dtos.TransporteDto;
+import reserva_api.models.*;
 import reserva_api.services.RecursoService;
+import reserva_api.services.SolicitacaoService;
+import reserva_api.utils.ApiError;
+import reserva_api.utils.ApiSuccess;
 
 @RestController
 @RequestMapping(value = "/recursos")
@@ -30,6 +30,9 @@ public class RecursoResource {
 
 	@Autowired
 	private RecursoService recursoService;
+
+	@Autowired
+	private SolicitacaoService solicitacaoService;
 
 	@GetMapping
 	public ResponseEntity<Page<Recurso>> buscarTodos(Pageable pageable) {
@@ -43,49 +46,91 @@ public class RecursoResource {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> excluirPorId(@PathVariable Long id) {
+	public ResponseEntity<Object> excluirPorId(@PathVariable Long id) {
+		var recurso = recursoService.buscarPorId(id);
+		if(solicitacaoService.existeRecurso(recurso)) {
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body(new ApiError("Não foi possível deletar o recurso, pois ele se encontra em uso!"));
+		}
+
 		recursoService.excluirPorId(id);
 		return ResponseEntity.noContent().build();
 	}
 
+	//Buscar todos os transportes
 	@GetMapping(value = "/transportes")
-	public ResponseEntity<Page<Transporte>> buscarTransportes(Pageable pageable) {
+	public ResponseEntity<Page<TransporteModel>> buscarTransportes(Pageable pageable) {
 		return ResponseEntity.ok().body(recursoService.buscarTransportes(pageable));
 	}
 
+	//Cadastrar transportes
 	@PostMapping(value = "/transportes")
-	public ResponseEntity<Recurso> salvar(@Valid @RequestBody Transporte transporte) {
-		Recurso recursoSalvo = recursoService.salvar(transporte);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(recursoSalvo.getId())
-				.toUri();
-		return ResponseEntity.created(uri).body(recursoSalvo);
+	public ResponseEntity<Object> salvar(@RequestBody @Valid TransporteDto transporteDto) {
+
+		if(recursoService.existsByDescricao(transporteDto.getDescricao())){
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiError( "Transporte já existe!"));
+		}
+
+		var transporteModel = new TransporteModel();
+		BeanUtils.copyProperties(transporteDto, transporteModel);
+		recursoService.salvar(transporteModel);
+
+		//Recurso recursoSalvo = recursoService.salvar(transporteModel);
+		//return ResponseEntity.status(HttpStatus.CREATED).body(recursoSalvo);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(new ApiSuccess("Transporte cadastrado com sucesso"));
 	}
 
+	//Atualizar transportes
 	@PutMapping("/transportes/{id}")
-	public ResponseEntity<Recurso> atualizar(@PathVariable Long id, @Valid @RequestBody Transporte transporte) {
-		Recurso recursoSalvo = recursoService.atualizar(id, transporte);
-		return ResponseEntity.ok(recursoSalvo);
+	public ResponseEntity<Object> atualizar(@PathVariable(value = "id") Long id,
+											@RequestBody @Valid TransporteDto transporteDto) {
+
+		//Recurso recursoSalvo = recursoService.atualizar(id, transporteDto);
+		//return ResponseEntity.ok(recursoSalvo);
+
+		recursoService.atualizar(id, transporteDto);
+		return ResponseEntity.status(HttpStatus.OK).body(new ApiSuccess("Atualização realizada com sucesso!"));
 	}
 
+	//Buscar todos os locais
 	@GetMapping(value = "/locais")
-	public ResponseEntity<Page<Local>> buscarLocais(Pageable pageable) {
+	public ResponseEntity<Page<LocalModel>> buscarLocais(Pageable pageable) {
 		return ResponseEntity.ok().body(recursoService.buscarLocais(pageable));
 	}
 
+	//Cadastrar local
 	@PostMapping(value = "/locais")
-	public ResponseEntity<Recurso> salvar(@Valid @RequestBody Local local) {
-		Recurso recursoSalvo = recursoService.salvar(local);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(recursoSalvo.getId())
-				.toUri();
-		return ResponseEntity.created(uri).body(recursoSalvo);
+	public ResponseEntity<Object> salvar(@RequestBody @Valid LocalDto localDto) {
+
+		if(recursoService.existsByDescricao(localDto.getDescricao())){
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiError( "Local já existe!"));
+		}
+
+		var localModel = new LocalModel();
+		BeanUtils.copyProperties(localDto, localModel);
+		recursoService.salvar(localModel);
+
+		//Recurso recursoSalvo = recursoService.salvar(localModel);
+		//return ResponseEntity.status(HttpStatus.CREATED).body(recursoSalvo);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(new ApiSuccess("Local cadastrado com sucesso"));
 	}
 
+	//Atualizar Local
 	@PutMapping("/locais/{id}")
-	public ResponseEntity<Recurso> atualizar(@PathVariable Long id, @Valid @RequestBody Local local) {
-		Recurso recursoSalvo = recursoService.atualizar(id, local);
-		return ResponseEntity.ok(recursoSalvo);
+	public ResponseEntity<Object> atualizar(@PathVariable(value = "id") Long id,
+											@RequestBody @Valid LocalDto localDto) {
+
+		//Recurso recursoSalvo = recursoService.atualizar(id, localDto);
+		//return ResponseEntity.ok(recursoSalvo);
+
+		recursoService.atualizar(id, localDto);
+		return ResponseEntity.status(HttpStatus.OK).body(new ApiSuccess("Atualização realizada com sucesso!"));
 	}
 
+	/*
 	@GetMapping(value = "/equipamentos")
 	public ResponseEntity<Page<Equipamento>> buscarEquipamentos(Pageable pageable) {
 		return ResponseEntity.ok().body(recursoService.buscarEquipamentos(pageable));
@@ -104,5 +149,6 @@ public class RecursoResource {
 		Recurso recursoSalvo = recursoService.atualizar(id, equipamento);
 		return ResponseEntity.ok(recursoSalvo);
 	}
+	*/
 
 }

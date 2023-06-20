@@ -15,8 +15,8 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import reserva_api.dto.PessoaDto;
-import reserva_api.model.Pessoa;
+import reserva_api.dtos.PessoaDto;
+import reserva_api.models.PessoaModel;
 import reserva_api.repositories.filters.PessoaFilter;
 
 public class PessoaRepositoryQueryImpl implements PessoaRepositoryQuery {
@@ -27,7 +27,7 @@ public class PessoaRepositoryQueryImpl implements PessoaRepositoryQuery {
 	public Page<PessoaDto> filtrarPessoa(PessoaFilter pessoaFilter, Pageable pageable) {
 		CriteriaBuilder builder = manager.getCriteriaBuilder();
 		CriteriaQuery<PessoaDto> criteria = builder.createQuery(PessoaDto.class);
-		Root<Pessoa> root = criteria.from(Pessoa.class);
+		Root<PessoaModel> root = criteria.from(PessoaModel.class);
 		
 		List<Predicate> predicates = criarRestricoes(pessoaFilter, builder, root);	
 
@@ -35,7 +35,7 @@ public class PessoaRepositoryQueryImpl implements PessoaRepositoryQuery {
 		criteria.distinct(true);
 
 		criteria.select(builder.construct(PessoaDto.class, root.get("nome"), root.get("cpf"),
-				root.get("siape"), root.get("dataNascimento"), root.get("tipoVinculo"),
+				root.get("siape"), root.get("dataNascimento"), root.get("tipoPerfil"),
 				root.get("telefone").get("numero")));
 
 		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
@@ -59,7 +59,7 @@ public class PessoaRepositoryQueryImpl implements PessoaRepositoryQuery {
 	private Long total(PessoaFilter  pessoaFilter) {
 		CriteriaBuilder builder = manager.getCriteriaBuilder();
 		CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
-		Root<Pessoa> root = criteria.from(Pessoa.class);
+		Root<PessoaModel> root = criteria.from(PessoaModel.class);
 		
 		List<Predicate> predicates = criarRestricoes(pessoaFilter, builder, root);
 
@@ -70,7 +70,7 @@ public class PessoaRepositoryQueryImpl implements PessoaRepositoryQuery {
 	}
 
 	private List<Predicate> criarRestricoes(PessoaFilter pessoaFilter, CriteriaBuilder builder,
-			Root<Pessoa> root) {
+			Root<PessoaModel> root) {
 
 		List<Predicate> predicates = new ArrayList<>();
 
@@ -94,8 +94,8 @@ public class PessoaRepositoryQueryImpl implements PessoaRepositoryQuery {
 					pessoaFilter.getDataNascimento()));
 		}
 		
-		if (!ObjectUtils.isEmpty(pessoaFilter.getTipoVinculo())) {
-			predicates.add(builder.equal(root.get("tipoVinculo"), pessoaFilter.getTipoVinculo()));
+		if (!ObjectUtils.isEmpty(pessoaFilter.getTipoPerfil())) {
+			predicates.add(builder.equal(root.get("tipoPerfil"), pessoaFilter.getTipoPerfil()));
 		}
 
 		return predicates;

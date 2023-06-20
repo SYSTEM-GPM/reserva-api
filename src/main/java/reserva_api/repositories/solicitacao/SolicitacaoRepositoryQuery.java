@@ -3,7 +3,7 @@ package reserva_api.repositories.solicitacao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import reserva_api.dto.ReservaDto;
+import reserva_api.dtos.ReservaDto;
 import reserva_api.repositories.filters.RecursoFilter;
 
 public interface SolicitacaoRepositoryQuery {
