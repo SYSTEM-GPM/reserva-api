@@ -33,7 +33,7 @@ public class  MensagemEmailUtil {
 
     public static String recuperacaoConta(PessoaModel pessoa) {
         return
-                MessageFormat.format("<h2>Ola, {0}!</h2><p>Um novo código para recuperação da sua conta foi gerado.</p><p>Para ter acesso ao <strong>Sistema GPMM</strong>, por favor acesse ao <a href=''{1}/definir-rota/?email={2}''>site</a> e infome o código abaixo:</p></br><h3><strong>{3}</strong></h3><p>Atenciosamente,</p><p><strong>Equipe do Sistema GPMM</strong></p>",
+                MessageFormat.format("<h2>Ola, {0}!</h2><p>Um novo código para recuperação da sua conta foi gerado.</p><p>Para ter acesso ao <strong>Sistema GPMM</strong>, por favor acesse ao <a href=''{1}/recuperar-conta/?email={2}''>site</a> e infome o código abaixo:</p></br><h3><strong>{3}</strong></h3><p>Atenciosamente,</p><p><strong>Equipe do Sistema GPMM</strong></p>",
                         pessoa.getNome(), Constantes.urlFront, pessoa.getEmail(), pessoa.getCodigoAtivacao());
     }
 
